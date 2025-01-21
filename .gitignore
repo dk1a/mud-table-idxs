@@ -1,0 +1,22 @@
+.DS_STORE
+
+dist
+node_modules
+package-lock.json
+yarn.lock
+
+# npm pack
+*.tgz
+
+*.log
+.eslintcache
+.parcel-cache
+.docs
+.turbo
+.attest
+.tstrace
+
+.env*
+
+# mud artifacts
+.mud

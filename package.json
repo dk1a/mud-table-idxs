@@ -1,0 +1,41 @@
+{
+  "name": "mud-table-idxs",
+  "private": true,
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/dk1a/mud-table-idxs.git"
+  },
+  "scripts": {
+    "build": "pnpm recursive run build",
+    "fix:package-json": "sort-package-json package.json 'packages/*/package.json'",
+    "foundryup": "curl -L https://foundry.paradigm.xyz | bash && bash ~/.foundry/bin/foundryup",
+    "mud:up": "pnpm mud set-version --tag main && pnpm install",
+    "prepare": "husky",
+    "test": "pnpm recursive run test"
+  },
+  "lint-staged": {
+    "*.{ts,tsx}": "eslint --cache --fix",
+    "*.{ts,tsx,css,md,mdx,sol}": "prettier --write",
+    "package.json": "pnpm fix:package-json"
+  },
+  "devDependencies": {
+    "@latticexyz/cli": "2.2.14",
+    "@latticexyz/common": "2.2.14",
+    "@latticexyz/explorer": "2.2.14",
+    "@latticexyz/store-indexer": "2.2.14",
+    "@types/debug": "4.1.7",
+    "@typescript-eslint/eslint-plugin": "7.1.1",
+    "@typescript-eslint/parser": "7.1.1",
+    "eslint": "8.57.0",
+    "husky": "^9.1.7",
+    "lint-staged": "^15.4.1",
+    "mprocs": "^0.7.1",
+    "shx": "^0.3.4",
+    "sort-package-json": "^2.14.0",
+    "typescript": "5.4.2"
+  },
+  "engines": {
+    "node": "18.x || 20.x",
+    "pnpm": "^9.6.0"
+  }
+}
