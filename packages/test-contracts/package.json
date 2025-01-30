@@ -1,6 +1,7 @@
 {
   "private": true,
   "license": "MIT",
+  "type": "module",
   "scripts": {
     "build": "pnpm run build:mud && pnpm run build:codegen",
     "build:codegen": "tsx ./ts/scripts/generate-test-idxs.ts",

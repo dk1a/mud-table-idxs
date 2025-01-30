@@ -69,6 +69,8 @@ export async function idxgen({ rootDir, idxsConfig, storeConfig }: IdxgenOptions
           await Promise.all(
             Object.values(tableIdxOptions).map(async ({ outputPath, renderOptions }) => {
               const source = renderTableIdx(renderOptions);
+              // TODO without @solidity-parser/parser the bundled version breaks here,
+              // probably because of prettier-solidity-plugin
               await formatAndWriteSolidity(source, outputPath, "Generated table idx");
             }),
           );
