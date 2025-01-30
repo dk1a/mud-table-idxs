@@ -5,14 +5,18 @@ export default defineWorld({
     ResourceId: { filePath: "@latticexyz/store/src/ResourceId.sol", type: "bytes32" },
     Uint8Map: { filePath: "./src/Uint8Map.sol", type: "bytes32" },
   },
-  tables: {
-    Equipment: {
-      key: ["entity"],
-      schema: {
-        entity: "bytes32",
-        slot: "bytes32",
-        level: "uint32",
-        name: "string",
+  namespaces: {
+    "": {
+      tables: {
+        Equipment: {
+          key: ["entity"],
+          schema: {
+            entity: "bytes32",
+            slot: "bytes32",
+            level: "uint32",
+            name: "string",
+          },
+        },
       },
     },
   },

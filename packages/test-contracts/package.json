@@ -2,7 +2,9 @@
   "private": true,
   "license": "MIT",
   "scripts": {
-    "build": "mud build",
+    "build": "pnpm run build:mud && pnpm run build:codegen",
+    "build:codegen": "tsx ./ts/scripts/generate-test-idxs.ts",
+    "build:mud": "mud build",
     "clean": "forge clean && shx rm -rf src/**/codegen",
     "deploy:garnet": "mud deploy --profile=garnet",
     "deploy:local": "mud deploy",
