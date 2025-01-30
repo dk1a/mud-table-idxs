@@ -6,7 +6,7 @@ import { console } from "forge-std/console.sol";
 import { StoreSwitch } from "@latticexyz/store/src/StoreSwitch.sol";
 
 import { IWorld } from "../src/codegen/world/IWorld.sol";
-import { UniqueIdx_Equipment_SlotName } from "../src/UniqueIdx_Equipment_SlotName.sol";
+import { UniqueIdx_Equipment_SlotName } from "../src/namespaces/root/codegen/idxs/UniqueIdx_Equipment_SlotName.sol";
 
 contract PostDeploy is Script {
   function run(address worldAddress) external {

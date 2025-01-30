@@ -6,7 +6,8 @@ export default defineWorld({
     Uint8Map: { filePath: "./src/Uint8Map.sol", type: "bytes32" },
   },
   namespaces: {
-    "": {
+    root: {
+      namespace: "",
       tables: {
         Equipment: {
           key: ["entity"],

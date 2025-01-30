@@ -8,8 +8,8 @@ import { UniqueIdxHook } from "@dk1a/mud-table-idxs/src/namespaces/uniqueIdx/Uni
 
 import { BaseTest } from "./BaseTest.t.sol";
 
-import { Equipment } from "../src/codegen/tables/Equipment.sol";
-import { UniqueIdx_Equipment_SlotName } from "../src/UniqueIdx_Equipment_SlotName.sol";
+import { Equipment } from "../src/namespaces/root/codegen/tables/Equipment.sol";
+import { UniqueIdx_Equipment_SlotName } from "../src/namespaces/root/codegen/idxs/UniqueIdx_Equipment_SlotName.sol";
 
 // Indexed columns: slot, name
 contract UniqueIdx_Equipment_SlotNameTest is BaseTest {
@@ -18,7 +18,7 @@ contract UniqueIdx_Equipment_SlotNameTest is BaseTest {
   function setUp() public virtual override {
     super.setUp();
 
-    hookAddress = UniqueIdxMetadata.getHookAddress(Equipment._tableId, UniqueIdx_Equipment_SlotName.indexesHash());
+    hookAddress = UniqueIdxMetadata.getHookAddress(Equipment._tableId, UniqueIdx_Equipment_SlotName._indexesHash);
   }
 
   function _expectCallSetHook() internal {

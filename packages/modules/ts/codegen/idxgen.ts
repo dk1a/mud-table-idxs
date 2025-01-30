@@ -60,11 +60,11 @@ export async function idxgen({ rootDir, idxsConfig, storeConfig }: IdxgenOptions
             idxImportPath: "@dk1a/mud-table-idxs/src",
           });
 
-          const tableDirs = uniqueBy(
-            tableOptions.map(({ outputPath }) => path.dirname(outputPath)),
+          const tableIdxDirs = uniqueBy(
+            tableIdxOptions.map(({ outputPath }) => path.dirname(outputPath)),
             (dir) => dir,
           );
-          await Promise.all(tableDirs.map((dir) => fs.rm(dir, { recursive: true, force: true })));
+          await Promise.all(tableIdxDirs.map((dir) => fs.rm(dir, { recursive: true, force: true })));
 
           await Promise.all(
             Object.values(tableIdxOptions).map(async ({ outputPath, renderOptions }) => {

@@ -4,10 +4,10 @@ import storeConfig from "./mud.config";
 export default defineStoreIdxs(
   {
     namespaces: {
-      "": {
+      root: {
         tables: {
           Equipment: {
-            slotName: {
+            UniqueIdx_Equipment_SlotName: {
               fields: ["slot", "name"],
             },
           },

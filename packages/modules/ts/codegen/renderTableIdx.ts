@@ -4,7 +4,6 @@ import {
   renderImports,
   renderTableId,
   renderTypeHelpers,
-  renderWithStore,
   renderedSolidityHeader,
   renderImportPath,
   renderCommonData,
@@ -15,7 +14,7 @@ import { renderFromKeyTypeHelpers } from "./renderFromKeyTypeHelpers";
 import { renderEncodeFieldSingle } from "@latticexyz/store/codegen";
 import { renderUint8Map } from "./renderUint8Map";
 import { encodeAbiParameters, keccak256 } from "viem";
-import { renderBytes32ToValueType } from "./common";
+import { renderBytes32ToValueType, renderWithStoreArg } from "./common";
 
 /**
  * Renders Solidity code for a table idx library, using the specified options
@@ -30,7 +29,6 @@ export function renderTableIdx(options: RenderTableIdxOptions) {
     storeImportPath,
     idxImportPath,
     keyTuple,
-    fields,
     selectedKeys,
     selectedKeyIndexes,
     selectedFields,
@@ -40,8 +38,10 @@ export function renderTableIdx(options: RenderTableIdxOptions) {
 
   const { _typedTableId, _typedKeyArgs } = renderCommonData({ staticResourceData, keyTuple });
 
-  const _fieldArgs = renderArguments(fields.map(({ name }) => name));
-  const _typedFieldArgs = renderArguments(fields.map(({ name, typeWithLocation }) => `${typeWithLocation} ${name}`));
+  const _selectedFieldArgs = renderArguments(selectedFields.map(({ name }) => name));
+  const _typedSelectedFieldArgs = renderArguments(
+    selectedFields.map(({ name, typeWithLocation }) => `${typeWithLocation} ${name}`),
+  );
 
   const _keyIndexes = renderUint8Map(selectedKeyIndexes);
   const _fieldIndexes = renderUint8Map(selectedFieldIndexes);
@@ -81,7 +81,7 @@ export function renderTableIdx(options: RenderTableIdxOptions) {
 
       bytes32 constant _indexesHash = ${_indexesHash};
 
-      function valuesHash(${renderArguments([_typedFieldArgs])}) internal pure returns (bytes32) {
+      function valuesHash(${renderArguments([_typedSelectedFieldArgs])}) internal pure returns (bytes32) {
         bytes32[] memory _partialKeyTuple = new bytes32[](_keyNumber);
         ${renderList(
           selectedKeys,
@@ -101,36 +101,36 @@ export function renderTableIdx(options: RenderTableIdxOptions) {
         return hashValues(_partialKeyTuple, _partialValues);
       }
 
-      ${renderWithStore(
+      // Should be called once in e.g. PostDeploy
+      function register(${renderArguments([_typedTableId])}) internal {
+        registerUniqueIdx(_tableId, _keyIndexes, _fieldIndexes);
+      }
+
+      ${renderWithStoreArg(
         storeArgument,
-        ({ _typedStore }) => `
-          // Should be called once in e.g. PostDeploy
-          function register(${renderArguments([_typedStore, _typedTableId])}) internal {
-            registerUniqueIdx(_tableId, _keyIndexes, _fieldIndexes);
-          }
+        ({ _typedStore, _store }) => `
+          function has(${renderArguments([_typedStore, _typedTableId, _typedSelectedFieldArgs])}) internal view returns (bool) {
+            bytes32 _valuesHash = valuesHash(${_selectedFieldArgs});
 
-          function has(${renderArguments([_typedStore, _typedTableId, _typedFieldArgs])}) internal view returns (bool) {
-            bytes32 _valuesHash = valuesHash(${_fieldArgs});
-
-            return UniqueIdx.length(_tableId, _indexesHash, _valuesHash) > 0;
+            return UniqueIdx.length(${renderArguments([_store, "_tableId", "_indexesHash", "_valuesHash"])}) > 0;
           }
 
           function getKeyTuple(${renderArguments([
             _typedStore,
             _typedTableId,
-            _typedFieldArgs,
+            _typedSelectedFieldArgs,
           ])}) internal view returns (bytes32[] memory _keyTuple) {
-            bytes32 _valuesHash = valuesHash(${_fieldArgs});
+            bytes32 _valuesHash = valuesHash(${_selectedFieldArgs});
 
-            return UniqueIdx.get(_tableId, _indexesHash, _valuesHash);
+            return UniqueIdx.get(${renderArguments([_store, "_tableId", "_indexesHash", "_valuesHash"])});
           }
 
           function get(${renderArguments([
             _typedStore,
             _typedTableId,
-            _typedFieldArgs,
+            _typedSelectedFieldArgs,
           ])}) internal view returns (${_typedKeyArgs}) {
-            bytes32[] memory _keyTuple = getKeyTuple(${_fieldArgs});
+            bytes32[] memory _keyTuple = getKeyTuple(${renderArguments([_store, _selectedFieldArgs])});
 
             ${renderDecodeKeyTuple(keyTuple)}
           }

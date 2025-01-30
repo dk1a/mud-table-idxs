@@ -17,6 +17,7 @@ export interface RenderTableIdxOptions {
   storeImportPath: string;
   idxImportPath: string;
   keyTuple: RenderKeyTuple[];
+  // TODO `fields` could be removed if you do something about renderTypeHelpers (which requires it)
   fields: RenderField[];
   selectedKeys: RenderStaticField[];
   selectedKeyIndexes: Uint8Array;

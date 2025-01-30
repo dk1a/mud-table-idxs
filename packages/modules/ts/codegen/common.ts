@@ -27,3 +27,23 @@ export function renderBytes32ToValueType(
     throw new Error(`Unknown value type id ${internalTypeId}`);
   }
 }
+
+interface RenderWithStoreArgCallbackData {
+  _typedStore: string | undefined;
+  _store: string | undefined;
+}
+
+// TODO this is quite different from mud's `renderWithStore`, name it something better and/or explain the diff better
+export function renderWithStoreArg(
+  storeArgument: boolean,
+  callback: (data: RenderWithStoreArgCallbackData) => string,
+): string {
+  let result = "";
+  result += callback({ _typedStore: undefined, _store: undefined });
+
+  if (storeArgument) {
+    result += "\n" + callback({ _typedStore: "IStore _store", _store: "_store" });
+  }
+
+  return result;
+}
