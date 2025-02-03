@@ -1,7 +1,7 @@
 import { Store } from "@latticexyz/store/";
 import { AbiType } from "@latticexyz/config";
-import { getUserTypesFilename } from "./getUserTypesFilename";
 import { groupBy } from "@latticexyz/common/utils";
+import { getUserTypesFilename } from "./getUserTypesFilename";
 
 export type UserType = {
   readonly type: "enum" | "userType";

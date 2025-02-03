@@ -1,4 +1,4 @@
-export { uniqueIdxModule } from "../uniqueIdxModule";
+export { basicIdxModule, uniqueIdxModule } from "../idxModules";
 
 export { defineStoreIdxs } from "../config/storeIdxs";
 export type { StoreIdxsInput } from "../config/input";

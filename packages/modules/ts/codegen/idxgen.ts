@@ -56,6 +56,7 @@ export async function idxgen({ rootDir, idxsConfig, storeConfig }: IdxgenOptions
             tableIdxs,
             rootDir,
             codegenDir,
+            userTypes,
             // TODO move to defaults properly or remove the option entirely
             idxImportPath: "@dk1a/mud-table-idxs/src",
           });

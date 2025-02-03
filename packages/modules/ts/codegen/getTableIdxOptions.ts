@@ -1,9 +1,11 @@
 import path from "path";
-import { RenderField, RenderStaticField } from "@latticexyz/common/codegen";
+import { maxUint8 } from "viem";
+import { ImportDatum, RenderField, RenderStaticField } from "@latticexyz/common/codegen";
+import { isDefined } from "@latticexyz/common/utils";
 import { TableOptions } from "@latticexyz/store/codegen";
 import { RenderTableIdxOptions } from "./types";
 import { TableIdx } from "../config/output";
-import { maxUint8 } from "viem";
+import { UserType } from "../tempcodegen/getUserTypes";
 
 export interface TableIdxOptions {
   /** Path where the file is expected to be written (relative to project root) */
@@ -22,6 +24,7 @@ export function getTableIdxOptions({
   tableIdxs,
   rootDir,
   codegenDir,
+  userTypes,
   idxImportPath,
 }: {
   readonly tableOptions: TableOptions;
@@ -29,6 +32,7 @@ export function getTableIdxOptions({
   readonly rootDir: string;
   /** namespace codegen output dir, relative to project root dir */
   readonly codegenDir: string;
+  readonly userTypes: readonly UserType[];
   /** absolute import path or, if starting with `.`, relative to project root dir */
   readonly idxImportPath: string;
 }): TableIdxOptions[] {
@@ -45,12 +49,28 @@ export function getTableIdxOptions({
       tableOptions.renderOptions.fields,
     );
 
+    // list of any symbols that need to be imported
+    const imports = [...selectedKeys, ...selectedFields]
+      .map((field) => userTypes.find((type) => type.name === field.typeId))
+      .filter(isDefined)
+      .map((userType): ImportDatum => {
+        return {
+          // If it's a fully qualified name, remove trailing references
+          // This enables support for user types inside libraries
+          symbol: userType.name.replace(/\..*$/, ""),
+          path: userType.importPath.startsWith(".")
+            ? "./" + path.relative(path.dirname(outputPath), path.join(rootDir, userType.importPath))
+            : userType.importPath,
+        };
+      });
+
     return {
       outputPath,
       idxName: tableIdx.label,
       renderOptions: {
-        imports: [],
+        imports,
         libraryName: tableIdx.label,
+        unique: tableIdx.unique,
         staticResourceData: tableOptions.renderOptions.staticResourceData,
         storeImportPath: tableOptions.renderOptions.storeImportPath,
         idxImportPath: idxImportPath.startsWith(".")

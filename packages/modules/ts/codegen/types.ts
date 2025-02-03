@@ -11,6 +11,7 @@ export interface RenderTableIdxOptions {
   imports: ImportDatum[];
   /** Name of the library to render. */
   libraryName: string;
+  unique: boolean;
   /** Data used to statically register the table. If undefined, all relevant methods receive `_sourceTableId` as an argument. */
   staticResourceData?: StaticResourceData;
   /** Path for store package imports */

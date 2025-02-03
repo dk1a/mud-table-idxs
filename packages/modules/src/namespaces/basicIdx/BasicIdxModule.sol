@@ -6,15 +6,16 @@ import { IBaseWorld } from "@latticexyz/world/src/codegen/interfaces/IBaseWorld.
 import { Systems } from "@latticexyz/world/src/codegen/tables/Systems.sol";
 
 import { NAMESPACE_ID, SYSTEM_ID } from "./constants.sol";
-import { UniqueIdxHook } from "./UniqueIdxHook.sol";
-import { UniqueIdx } from "./codegen/tables/UniqueIdx.sol";
-import { UniqueIdxMetadata } from "./codegen/tables/UniqueIdxMetadata.sol";
-import { UniqueIdxRegistrationSystem } from "./UniqueIdxRegistrationSystem.sol";
+import { BasicIdxHook } from "./BasicIdxHook.sol";
+import { BasicIdx } from "./codegen/tables/BasicIdx.sol";
+import { BasicIdxMetadata } from "./codegen/tables/BasicIdxMetadata.sol";
+import { BasicIdxUsedKeys } from "./codegen/tables/BasicIdxUsedKeys.sol";
+import { BasicIdxRegistrationSystem } from "./BasicIdxRegistrationSystem.sol";
 
-contract UniqueIdxModule is Module {
-  // Since the UniqueIdxRegistrationSystem only exists once per World and writes to
+contract BasicIdxModule is Module {
+  // Since the BasicIdxRegistrationSystem only exists once per World and writes to
   // known tables, we can deploy it once and register it in multiple Worlds.
-  UniqueIdxRegistrationSystem private immutable uniqueIdxRegistrationSystem = new UniqueIdxRegistrationSystem();
+  BasicIdxRegistrationSystem private immutable basicIdxRegistrationSystem = new BasicIdxRegistrationSystem();
 
   function installRoot(bytes memory) public pure {
     revert Module_RootInstallNotSupported();
@@ -27,11 +28,12 @@ contract UniqueIdxModule is Module {
     world.registerNamespace(NAMESPACE_ID);
 
     // Register tables
-    UniqueIdx.register();
-    UniqueIdxMetadata.register();
+    BasicIdx.register();
+    BasicIdxMetadata.register();
+    BasicIdxUsedKeys.register();
 
     // Register system
-    world.registerSystem(SYSTEM_ID, uniqueIdxRegistrationSystem, true);
+    world.registerSystem(SYSTEM_ID, basicIdxRegistrationSystem, true);
 
     // Transfer namespace ownership to the registration system, so it can grant table access to hooks
     (address systemAddress, ) = Systems.get(SYSTEM_ID);

@@ -1,3 +1,4 @@
+import { basicIdxModule, uniqueIdxModule } from "@dk1a/mud-table-idxs";
 import { defineWorld } from "@latticexyz/world";
 
 export default defineWorld({
@@ -9,11 +10,20 @@ export default defineWorld({
     root: {
       namespace: "",
       tables: {
+        Position: {
+          key: ["matchEntity", "entity"],
+          schema: {
+            matchEntity: "bytes32",
+            entity: "bytes32",
+            x: "int32",
+            y: "int32",
+          },
+        },
         Equipment: {
           key: ["entity"],
           schema: {
             entity: "bytes32",
-            slot: "bytes32",
+            slot: "EquipmentSlot",
             level: "uint32",
             name: "string",
           },
@@ -21,10 +31,8 @@ export default defineWorld({
       },
     },
   },
-  modules: [
-    {
-      artifactPath: "@dk1a/mud-table-idxs/out/UniqueIdxModule.sol/UniqueIdxModule.json",
-      root: false,
-    },
-  ],
+  enums: {
+    EquipmentSlot: ["Armor", "Weapon"],
+  },
+  modules: [basicIdxModule, uniqueIdxModule],
 });

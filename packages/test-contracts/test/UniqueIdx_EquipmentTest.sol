@@ -8,11 +8,12 @@ import { UniqueIdxHook } from "@dk1a/mud-table-idxs/src/namespaces/uniqueIdx/Uni
 
 import { BaseTest } from "./BaseTest.t.sol";
 
+import { EquipmentSlot } from "../src/codegen/common.sol";
 import { Equipment } from "../src/namespaces/root/codegen/tables/Equipment.sol";
 import { UniqueIdx_Equipment_SlotName } from "../src/namespaces/root/codegen/idxs/UniqueIdx_Equipment_SlotName.sol";
 
 // Indexed columns: slot, name
-contract UniqueIdx_Equipment_SlotNameTest is BaseTest {
+contract UniqueIdx_EquipmentTest is BaseTest {
   address hookAddress;
 
   function setUp() public virtual override {
@@ -35,7 +36,7 @@ contract UniqueIdx_Equipment_SlotNameTest is BaseTest {
 
   function testGet() public {
     bytes32 entity = hex"1a";
-    bytes32 slot = "hands";
+    EquipmentSlot slot = EquipmentSlot.Armor;
     uint32 level = 5;
     string memory name = "gloves";
 
@@ -47,7 +48,7 @@ contract UniqueIdx_Equipment_SlotNameTest is BaseTest {
   }
 
   function testSetUniqueDuplicateError() public {
-    bytes32 slot = "hands";
+    EquipmentSlot slot = EquipmentSlot.Armor;
     uint32 level = 5;
     string memory name = "gloves";
 

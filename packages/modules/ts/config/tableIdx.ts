@@ -1,7 +1,7 @@
 import { ErrorMessage, show } from "@ark/util";
-import { TableIdxInput } from "./input";
 import { get, hasOwnKey, Store } from "@latticexyz/store/internal";
 import { Table } from "@latticexyz/config";
+import { TableIdxInput } from "./input";
 import { TableIdxCodegen } from "./output";
 import { TABLE_IDX_CODEGEN_DEFAULTS } from "./defaults";
 
@@ -26,7 +26,6 @@ export function validateFields<storeTable extends Table>(
   }
 }
 
-// TODO fix store labels, they dont narrow
 export type validateTableIdx<
   input,
   storeConfig extends Store,

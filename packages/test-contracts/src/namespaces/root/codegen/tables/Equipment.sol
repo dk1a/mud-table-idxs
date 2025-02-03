@@ -16,8 +16,11 @@ import { Schema } from "@latticexyz/store/src/Schema.sol";
 import { EncodedLengths, EncodedLengthsLib } from "@latticexyz/store/src/EncodedLengths.sol";
 import { ResourceId } from "@latticexyz/store/src/ResourceId.sol";
 
+// Import user types
+import { EquipmentSlot } from "../../../../codegen/common.sol";
+
 struct EquipmentData {
-  bytes32 slot;
+  EquipmentSlot slot;
   uint32 level;
   string name;
 }
@@ -27,12 +30,12 @@ library Equipment {
   ResourceId constant _tableId = ResourceId.wrap(0x7462000000000000000000000000000045717569706d656e7400000000000000);
 
   FieldLayout constant _fieldLayout =
-    FieldLayout.wrap(0x0024020120040000000000000000000000000000000000000000000000000000);
+    FieldLayout.wrap(0x0005020101040000000000000000000000000000000000000000000000000000);
 
   // Hex-encoded key schema of (bytes32)
   Schema constant _keySchema = Schema.wrap(0x002001005f000000000000000000000000000000000000000000000000000000);
-  // Hex-encoded value schema of (bytes32, uint32, string)
-  Schema constant _valueSchema = Schema.wrap(0x002402015f03c500000000000000000000000000000000000000000000000000);
+  // Hex-encoded value schema of (uint8, uint32, string)
+  Schema constant _valueSchema = Schema.wrap(0x000502010003c500000000000000000000000000000000000000000000000000);
 
   /**
    * @notice Get the table's key field names.
@@ -71,43 +74,43 @@ library Equipment {
   /**
    * @notice Get slot.
    */
-  function getSlot(bytes32 entity) internal view returns (bytes32 slot) {
+  function getSlot(bytes32 entity) internal view returns (EquipmentSlot slot) {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = entity;
 
     bytes32 _blob = StoreSwitch.getStaticField(_tableId, _keyTuple, 0, _fieldLayout);
-    return (bytes32(_blob));
+    return EquipmentSlot(uint8(bytes1(_blob)));
   }
 
   /**
    * @notice Get slot.
    */
-  function _getSlot(bytes32 entity) internal view returns (bytes32 slot) {
+  function _getSlot(bytes32 entity) internal view returns (EquipmentSlot slot) {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = entity;
 
     bytes32 _blob = StoreCore.getStaticField(_tableId, _keyTuple, 0, _fieldLayout);
-    return (bytes32(_blob));
+    return EquipmentSlot(uint8(bytes1(_blob)));
   }
 
   /**
    * @notice Set slot.
    */
-  function setSlot(bytes32 entity, bytes32 slot) internal {
+  function setSlot(bytes32 entity, EquipmentSlot slot) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = entity;
 
-    StoreSwitch.setStaticField(_tableId, _keyTuple, 0, abi.encodePacked((slot)), _fieldLayout);
+    StoreSwitch.setStaticField(_tableId, _keyTuple, 0, abi.encodePacked(uint8(slot)), _fieldLayout);
   }
 
   /**
    * @notice Set slot.
    */
-  function _setSlot(bytes32 entity, bytes32 slot) internal {
+  function _setSlot(bytes32 entity, EquipmentSlot slot) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = entity;
 
-    StoreCore.setStaticField(_tableId, _keyTuple, 0, abi.encodePacked((slot)), _fieldLayout);
+    StoreCore.setStaticField(_tableId, _keyTuple, 0, abi.encodePacked(uint8(slot)), _fieldLayout);
   }
 
   /**
@@ -347,7 +350,7 @@ library Equipment {
   /**
    * @notice Set the full data using individual values.
    */
-  function set(bytes32 entity, bytes32 slot, uint32 level, string memory name) internal {
+  function set(bytes32 entity, EquipmentSlot slot, uint32 level, string memory name) internal {
     bytes memory _staticData = encodeStatic(slot, level);
 
     EncodedLengths _encodedLengths = encodeLengths(name);
@@ -362,7 +365,7 @@ library Equipment {
   /**
    * @notice Set the full data using individual values.
    */
-  function _set(bytes32 entity, bytes32 slot, uint32 level, string memory name) internal {
+  function _set(bytes32 entity, EquipmentSlot slot, uint32 level, string memory name) internal {
     bytes memory _staticData = encodeStatic(slot, level);
 
     EncodedLengths _encodedLengths = encodeLengths(name);
@@ -407,10 +410,10 @@ library Equipment {
   /**
    * @notice Decode the tightly packed blob of static data using this table's field layout.
    */
-  function decodeStatic(bytes memory _blob) internal pure returns (bytes32 slot, uint32 level) {
-    slot = (Bytes.getBytes32(_blob, 0));
+  function decodeStatic(bytes memory _blob) internal pure returns (EquipmentSlot slot, uint32 level) {
+    slot = EquipmentSlot(uint8(Bytes.getBytes1(_blob, 0)));
 
-    level = (uint32(Bytes.getBytes4(_blob, 32)));
+    level = (uint32(Bytes.getBytes4(_blob, 1)));
   }
 
   /**
@@ -468,7 +471,7 @@ library Equipment {
    * @notice Tightly pack static (fixed length) data using this table's schema.
    * @return The static data, encoded into a sequence of bytes.
    */
-  function encodeStatic(bytes32 slot, uint32 level) internal pure returns (bytes memory) {
+  function encodeStatic(EquipmentSlot slot, uint32 level) internal pure returns (bytes memory) {
     return abi.encodePacked(slot, level);
   }
 
@@ -498,7 +501,7 @@ library Equipment {
    * @return The dynamic (variable length) data, encoded into a sequence of bytes.
    */
   function encode(
-    bytes32 slot,
+    EquipmentSlot slot,
     uint32 level,
     string memory name
   ) internal pure returns (bytes memory, EncodedLengths, bytes memory) {
