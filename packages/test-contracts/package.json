@@ -3,9 +3,9 @@
   "license": "MIT",
   "type": "module",
   "scripts": {
-    "build": "pnpm run build:codegen && pnpm run build:mud",
-    "build:codegen": "tsx ./ts/scripts/generate-test-idxs.ts",
+    "build": "pnpm run build:mudidx && pnpm run build:mud",
     "build:mud": "mud build",
+    "build:mudidx": "tsx ./ts/scripts/generate-test-idxs.ts",
     "clean": "forge clean && shx rm -rf src/**/codegen",
     "deploy:garnet": "mud deploy --profile=garnet",
     "deploy:local": "mud deploy",
