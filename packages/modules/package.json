@@ -70,5 +70,8 @@
     "solhint-config-mud": "2.2.14",
     "solhint-plugin-mud": "2.2.14",
     "tsup": "^8.3.5"
+  },
+  "publishConfig": {
+    "access": "public"
   }
 }

@@ -11,6 +11,7 @@
     "foundryup": "curl -L https://foundry.paradigm.xyz | bash && bash ~/.foundry/bin/foundryup",
     "mud:up": "pnpm mud set-version --tag main && pnpm install",
     "prepare": "husky",
+    "release:publish": "pnpm install && pnpm build && pnpm publish --filter '@dk1a/mud-table-idxs'",
     "test": "pnpm recursive run test"
   },
   "lint-staged": {
