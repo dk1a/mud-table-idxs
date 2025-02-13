@@ -53,14 +53,12 @@ export default defineWorld({
             sourceTableId: "ResourceId",
             // Hash of key and field indexes - 1 per table hook
             indexesHash: "bytes32",
-            // Hash of key and field values - 1 per table row
-            valuesHash: "bytes32",
             // Hash of keyTuple (the combination of keyParts)
             keyTupleHash: "bytes32",
             has: "bool",
             index: "uint40",
           },
-          key: ["sourceTableId", "indexesHash", "valuesHash", "keyTupleHash"],
+          key: ["sourceTableId", "indexesHash", "keyTupleHash"],
           codegen: {
             dataStruct: false,
             storeArgument: true,

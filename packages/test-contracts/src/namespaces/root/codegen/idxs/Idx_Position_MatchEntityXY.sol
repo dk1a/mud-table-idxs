@@ -53,24 +53,18 @@ library Idx_Position_MatchEntityXY {
     return BasicIdx_KeyTuple.length(_tableId, _indexesHash, _valuesHash);
   }
 
-  function hasKeyTuple(
-    bytes32 matchEntity,
-    int32 x,
-    int32 y,
-    bytes32[] memory _keyTuple
-  ) internal view returns (bool _has, uint40 _index) {
-    bytes32 _valuesHash = valuesHash(matchEntity, x, y);
+  function hasKeyTuple(bytes32[] memory _keyTuple) internal view returns (bool _has, uint40 _index) {
     bytes32 _keyTupleHash = keccak256(abi.encode(_keyTuple));
 
-    return BasicIdxUsedKeys.get(_tableId, _indexesHash, _valuesHash, _keyTupleHash);
+    return BasicIdxUsedKeys.get(_tableId, _indexesHash, _keyTupleHash);
   }
 
-  function has(bytes32 matchEntity, int32 x, int32 y, bytes32 entity) internal view returns (bool _has, uint40 _index) {
+  function has(bytes32 matchEntity, bytes32 entity) internal view returns (bool _has, uint40 _index) {
     bytes32[] memory _keyTuple = new bytes32[](2);
     _keyTuple[0] = matchEntity;
     _keyTuple[1] = entity;
 
-    return hasKeyTuple(matchEntity, x, y, _keyTuple);
+    return hasKeyTuple(_keyTuple);
   }
 
   function getKeyTuple(

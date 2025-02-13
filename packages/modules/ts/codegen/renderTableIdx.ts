@@ -193,7 +193,7 @@ function renderBasicMethods(
   _selectedArgs: string,
   _typedSelectedArgs: string,
 ): string {
-  const { _typedTableId, _keyTupleDefinition } = renderCommonData({ staticResourceData, keyTuple });
+  const { _typedTableId, _typedKeyArgs, _keyTupleDefinition } = renderCommonData({ staticResourceData, keyTuple });
   const _tableIdArg = _typedTableId ? "_tableId" : undefined;
 
   // A part of keyTuple can already be passed as selected keys, so skip them since they can't differ
@@ -215,24 +215,21 @@ function renderBasicMethods(
       function hasKeyTuple(${renderArguments([
         _typedStore,
         _typedTableId,
-        _typedSelectedArgs,
         "bytes32[] memory _keyTuple",
       ])}) internal view returns (bool _has, uint40 _index) {
-        bytes32 _valuesHash = valuesHash(${_selectedArgs});
         bytes32 _keyTupleHash = keccak256(abi.encode(_keyTuple));
 
-        return BasicIdxUsedKeys.get(${renderArguments([_store, "_tableId", "_indexesHash", "_valuesHash", "_keyTupleHash"])});
+        return BasicIdxUsedKeys.get(${renderArguments([_store, "_tableId", "_indexesHash", "_keyTupleHash"])});
       }
 
       function has(${renderArguments([
         _typedStore,
         _typedTableId,
-        _typedSelectedArgs,
-        _typedKeyArgsWithoutSelected,
+        _typedKeyArgs,
       ])}) internal view returns (bool _has, uint40 _index) {
         ${_keyTupleDefinition}
 
-        return hasKeyTuple(${renderArguments([_store, _tableIdArg, _selectedArgs, "_keyTuple"])});
+        return hasKeyTuple(${renderArguments([_store, _tableIdArg, "_keyTuple"])});
       }
     `,
   );

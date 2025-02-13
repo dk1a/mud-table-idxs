@@ -26,8 +26,8 @@ library BasicIdxUsedKeys {
   FieldLayout constant _fieldLayout =
     FieldLayout.wrap(0x0006020001050000000000000000000000000000000000000000000000000000);
 
-  // Hex-encoded key schema of (bytes32, bytes32, bytes32, bytes32)
-  Schema constant _keySchema = Schema.wrap(0x008004005f5f5f5f000000000000000000000000000000000000000000000000);
+  // Hex-encoded key schema of (bytes32, bytes32, bytes32)
+  Schema constant _keySchema = Schema.wrap(0x006003005f5f5f00000000000000000000000000000000000000000000000000);
   // Hex-encoded value schema of (bool, uint40)
   Schema constant _valueSchema = Schema.wrap(0x0006020060040000000000000000000000000000000000000000000000000000);
 
@@ -36,11 +36,10 @@ library BasicIdxUsedKeys {
    * @return keyNames An array of strings with the names of key fields.
    */
   function getKeyNames() internal pure returns (string[] memory keyNames) {
-    keyNames = new string[](4);
+    keyNames = new string[](3);
     keyNames[0] = "sourceTableId";
     keyNames[1] = "indexesHash";
-    keyNames[2] = "valuesHash";
-    keyNames[3] = "keyTupleHash";
+    keyNames[2] = "keyTupleHash";
   }
 
   /**
@@ -80,14 +79,12 @@ library BasicIdxUsedKeys {
   function getHas(
     ResourceId sourceTableId,
     bytes32 indexesHash,
-    bytes32 valuesHash,
     bytes32 keyTupleHash
   ) internal view returns (bool has) {
-    bytes32[] memory _keyTuple = new bytes32[](4);
+    bytes32[] memory _keyTuple = new bytes32[](3);
     _keyTuple[0] = ResourceId.unwrap(sourceTableId);
     _keyTuple[1] = indexesHash;
-    _keyTuple[2] = valuesHash;
-    _keyTuple[3] = keyTupleHash;
+    _keyTuple[2] = keyTupleHash;
 
     bytes32 _blob = StoreSwitch.getStaticField(_tableId, _keyTuple, 0, _fieldLayout);
     return (_toBool(uint8(bytes1(_blob))));
@@ -99,14 +96,12 @@ library BasicIdxUsedKeys {
   function _getHas(
     ResourceId sourceTableId,
     bytes32 indexesHash,
-    bytes32 valuesHash,
     bytes32 keyTupleHash
   ) internal view returns (bool has) {
-    bytes32[] memory _keyTuple = new bytes32[](4);
+    bytes32[] memory _keyTuple = new bytes32[](3);
     _keyTuple[0] = ResourceId.unwrap(sourceTableId);
     _keyTuple[1] = indexesHash;
-    _keyTuple[2] = valuesHash;
-    _keyTuple[3] = keyTupleHash;
+    _keyTuple[2] = keyTupleHash;
 
     bytes32 _blob = StoreCore.getStaticField(_tableId, _keyTuple, 0, _fieldLayout);
     return (_toBool(uint8(bytes1(_blob))));
@@ -119,14 +114,12 @@ library BasicIdxUsedKeys {
     IStore _store,
     ResourceId sourceTableId,
     bytes32 indexesHash,
-    bytes32 valuesHash,
     bytes32 keyTupleHash
   ) internal view returns (bool has) {
-    bytes32[] memory _keyTuple = new bytes32[](4);
+    bytes32[] memory _keyTuple = new bytes32[](3);
     _keyTuple[0] = ResourceId.unwrap(sourceTableId);
     _keyTuple[1] = indexesHash;
-    _keyTuple[2] = valuesHash;
-    _keyTuple[3] = keyTupleHash;
+    _keyTuple[2] = keyTupleHash;
 
     bytes32 _blob = _store.getStaticField(_tableId, _keyTuple, 0, _fieldLayout);
     return (_toBool(uint8(bytes1(_blob))));
@@ -135,18 +128,11 @@ library BasicIdxUsedKeys {
   /**
    * @notice Set has.
    */
-  function setHas(
-    ResourceId sourceTableId,
-    bytes32 indexesHash,
-    bytes32 valuesHash,
-    bytes32 keyTupleHash,
-    bool has
-  ) internal {
-    bytes32[] memory _keyTuple = new bytes32[](4);
+  function setHas(ResourceId sourceTableId, bytes32 indexesHash, bytes32 keyTupleHash, bool has) internal {
+    bytes32[] memory _keyTuple = new bytes32[](3);
     _keyTuple[0] = ResourceId.unwrap(sourceTableId);
     _keyTuple[1] = indexesHash;
-    _keyTuple[2] = valuesHash;
-    _keyTuple[3] = keyTupleHash;
+    _keyTuple[2] = keyTupleHash;
 
     StoreSwitch.setStaticField(_tableId, _keyTuple, 0, abi.encodePacked((has)), _fieldLayout);
   }
@@ -154,18 +140,11 @@ library BasicIdxUsedKeys {
   /**
    * @notice Set has.
    */
-  function _setHas(
-    ResourceId sourceTableId,
-    bytes32 indexesHash,
-    bytes32 valuesHash,
-    bytes32 keyTupleHash,
-    bool has
-  ) internal {
-    bytes32[] memory _keyTuple = new bytes32[](4);
+  function _setHas(ResourceId sourceTableId, bytes32 indexesHash, bytes32 keyTupleHash, bool has) internal {
+    bytes32[] memory _keyTuple = new bytes32[](3);
     _keyTuple[0] = ResourceId.unwrap(sourceTableId);
     _keyTuple[1] = indexesHash;
-    _keyTuple[2] = valuesHash;
-    _keyTuple[3] = keyTupleHash;
+    _keyTuple[2] = keyTupleHash;
 
     StoreCore.setStaticField(_tableId, _keyTuple, 0, abi.encodePacked((has)), _fieldLayout);
   }
@@ -177,15 +156,13 @@ library BasicIdxUsedKeys {
     IStore _store,
     ResourceId sourceTableId,
     bytes32 indexesHash,
-    bytes32 valuesHash,
     bytes32 keyTupleHash,
     bool has
   ) internal {
-    bytes32[] memory _keyTuple = new bytes32[](4);
+    bytes32[] memory _keyTuple = new bytes32[](3);
     _keyTuple[0] = ResourceId.unwrap(sourceTableId);
     _keyTuple[1] = indexesHash;
-    _keyTuple[2] = valuesHash;
-    _keyTuple[3] = keyTupleHash;
+    _keyTuple[2] = keyTupleHash;
 
     _store.setStaticField(_tableId, _keyTuple, 0, abi.encodePacked((has)), _fieldLayout);
   }
@@ -196,14 +173,12 @@ library BasicIdxUsedKeys {
   function getIndex(
     ResourceId sourceTableId,
     bytes32 indexesHash,
-    bytes32 valuesHash,
     bytes32 keyTupleHash
   ) internal view returns (uint40 index) {
-    bytes32[] memory _keyTuple = new bytes32[](4);
+    bytes32[] memory _keyTuple = new bytes32[](3);
     _keyTuple[0] = ResourceId.unwrap(sourceTableId);
     _keyTuple[1] = indexesHash;
-    _keyTuple[2] = valuesHash;
-    _keyTuple[3] = keyTupleHash;
+    _keyTuple[2] = keyTupleHash;
 
     bytes32 _blob = StoreSwitch.getStaticField(_tableId, _keyTuple, 1, _fieldLayout);
     return (uint40(bytes5(_blob)));
@@ -215,14 +190,12 @@ library BasicIdxUsedKeys {
   function _getIndex(
     ResourceId sourceTableId,
     bytes32 indexesHash,
-    bytes32 valuesHash,
     bytes32 keyTupleHash
   ) internal view returns (uint40 index) {
-    bytes32[] memory _keyTuple = new bytes32[](4);
+    bytes32[] memory _keyTuple = new bytes32[](3);
     _keyTuple[0] = ResourceId.unwrap(sourceTableId);
     _keyTuple[1] = indexesHash;
-    _keyTuple[2] = valuesHash;
-    _keyTuple[3] = keyTupleHash;
+    _keyTuple[2] = keyTupleHash;
 
     bytes32 _blob = StoreCore.getStaticField(_tableId, _keyTuple, 1, _fieldLayout);
     return (uint40(bytes5(_blob)));
@@ -235,14 +208,12 @@ library BasicIdxUsedKeys {
     IStore _store,
     ResourceId sourceTableId,
     bytes32 indexesHash,
-    bytes32 valuesHash,
     bytes32 keyTupleHash
   ) internal view returns (uint40 index) {
-    bytes32[] memory _keyTuple = new bytes32[](4);
+    bytes32[] memory _keyTuple = new bytes32[](3);
     _keyTuple[0] = ResourceId.unwrap(sourceTableId);
     _keyTuple[1] = indexesHash;
-    _keyTuple[2] = valuesHash;
-    _keyTuple[3] = keyTupleHash;
+    _keyTuple[2] = keyTupleHash;
 
     bytes32 _blob = _store.getStaticField(_tableId, _keyTuple, 1, _fieldLayout);
     return (uint40(bytes5(_blob)));
@@ -251,18 +222,11 @@ library BasicIdxUsedKeys {
   /**
    * @notice Set index.
    */
-  function setIndex(
-    ResourceId sourceTableId,
-    bytes32 indexesHash,
-    bytes32 valuesHash,
-    bytes32 keyTupleHash,
-    uint40 index
-  ) internal {
-    bytes32[] memory _keyTuple = new bytes32[](4);
+  function setIndex(ResourceId sourceTableId, bytes32 indexesHash, bytes32 keyTupleHash, uint40 index) internal {
+    bytes32[] memory _keyTuple = new bytes32[](3);
     _keyTuple[0] = ResourceId.unwrap(sourceTableId);
     _keyTuple[1] = indexesHash;
-    _keyTuple[2] = valuesHash;
-    _keyTuple[3] = keyTupleHash;
+    _keyTuple[2] = keyTupleHash;
 
     StoreSwitch.setStaticField(_tableId, _keyTuple, 1, abi.encodePacked((index)), _fieldLayout);
   }
@@ -270,18 +234,11 @@ library BasicIdxUsedKeys {
   /**
    * @notice Set index.
    */
-  function _setIndex(
-    ResourceId sourceTableId,
-    bytes32 indexesHash,
-    bytes32 valuesHash,
-    bytes32 keyTupleHash,
-    uint40 index
-  ) internal {
-    bytes32[] memory _keyTuple = new bytes32[](4);
+  function _setIndex(ResourceId sourceTableId, bytes32 indexesHash, bytes32 keyTupleHash, uint40 index) internal {
+    bytes32[] memory _keyTuple = new bytes32[](3);
     _keyTuple[0] = ResourceId.unwrap(sourceTableId);
     _keyTuple[1] = indexesHash;
-    _keyTuple[2] = valuesHash;
-    _keyTuple[3] = keyTupleHash;
+    _keyTuple[2] = keyTupleHash;
 
     StoreCore.setStaticField(_tableId, _keyTuple, 1, abi.encodePacked((index)), _fieldLayout);
   }
@@ -293,15 +250,13 @@ library BasicIdxUsedKeys {
     IStore _store,
     ResourceId sourceTableId,
     bytes32 indexesHash,
-    bytes32 valuesHash,
     bytes32 keyTupleHash,
     uint40 index
   ) internal {
-    bytes32[] memory _keyTuple = new bytes32[](4);
+    bytes32[] memory _keyTuple = new bytes32[](3);
     _keyTuple[0] = ResourceId.unwrap(sourceTableId);
     _keyTuple[1] = indexesHash;
-    _keyTuple[2] = valuesHash;
-    _keyTuple[3] = keyTupleHash;
+    _keyTuple[2] = keyTupleHash;
 
     _store.setStaticField(_tableId, _keyTuple, 1, abi.encodePacked((index)), _fieldLayout);
   }
@@ -312,14 +267,12 @@ library BasicIdxUsedKeys {
   function get(
     ResourceId sourceTableId,
     bytes32 indexesHash,
-    bytes32 valuesHash,
     bytes32 keyTupleHash
   ) internal view returns (bool has, uint40 index) {
-    bytes32[] memory _keyTuple = new bytes32[](4);
+    bytes32[] memory _keyTuple = new bytes32[](3);
     _keyTuple[0] = ResourceId.unwrap(sourceTableId);
     _keyTuple[1] = indexesHash;
-    _keyTuple[2] = valuesHash;
-    _keyTuple[3] = keyTupleHash;
+    _keyTuple[2] = keyTupleHash;
 
     (bytes memory _staticData, EncodedLengths _encodedLengths, bytes memory _dynamicData) = StoreSwitch.getRecord(
       _tableId,
@@ -335,14 +288,12 @@ library BasicIdxUsedKeys {
   function _get(
     ResourceId sourceTableId,
     bytes32 indexesHash,
-    bytes32 valuesHash,
     bytes32 keyTupleHash
   ) internal view returns (bool has, uint40 index) {
-    bytes32[] memory _keyTuple = new bytes32[](4);
+    bytes32[] memory _keyTuple = new bytes32[](3);
     _keyTuple[0] = ResourceId.unwrap(sourceTableId);
     _keyTuple[1] = indexesHash;
-    _keyTuple[2] = valuesHash;
-    _keyTuple[3] = keyTupleHash;
+    _keyTuple[2] = keyTupleHash;
 
     (bytes memory _staticData, EncodedLengths _encodedLengths, bytes memory _dynamicData) = StoreCore.getRecord(
       _tableId,
@@ -359,14 +310,12 @@ library BasicIdxUsedKeys {
     IStore _store,
     ResourceId sourceTableId,
     bytes32 indexesHash,
-    bytes32 valuesHash,
     bytes32 keyTupleHash
   ) internal view returns (bool has, uint40 index) {
-    bytes32[] memory _keyTuple = new bytes32[](4);
+    bytes32[] memory _keyTuple = new bytes32[](3);
     _keyTuple[0] = ResourceId.unwrap(sourceTableId);
     _keyTuple[1] = indexesHash;
-    _keyTuple[2] = valuesHash;
-    _keyTuple[3] = keyTupleHash;
+    _keyTuple[2] = keyTupleHash;
 
     (bytes memory _staticData, EncodedLengths _encodedLengths, bytes memory _dynamicData) = _store.getRecord(
       _tableId,
@@ -379,24 +328,16 @@ library BasicIdxUsedKeys {
   /**
    * @notice Set the full data using individual values.
    */
-  function set(
-    ResourceId sourceTableId,
-    bytes32 indexesHash,
-    bytes32 valuesHash,
-    bytes32 keyTupleHash,
-    bool has,
-    uint40 index
-  ) internal {
+  function set(ResourceId sourceTableId, bytes32 indexesHash, bytes32 keyTupleHash, bool has, uint40 index) internal {
     bytes memory _staticData = encodeStatic(has, index);
 
     EncodedLengths _encodedLengths;
     bytes memory _dynamicData;
 
-    bytes32[] memory _keyTuple = new bytes32[](4);
+    bytes32[] memory _keyTuple = new bytes32[](3);
     _keyTuple[0] = ResourceId.unwrap(sourceTableId);
     _keyTuple[1] = indexesHash;
-    _keyTuple[2] = valuesHash;
-    _keyTuple[3] = keyTupleHash;
+    _keyTuple[2] = keyTupleHash;
 
     StoreSwitch.setRecord(_tableId, _keyTuple, _staticData, _encodedLengths, _dynamicData);
   }
@@ -404,24 +345,16 @@ library BasicIdxUsedKeys {
   /**
    * @notice Set the full data using individual values.
    */
-  function _set(
-    ResourceId sourceTableId,
-    bytes32 indexesHash,
-    bytes32 valuesHash,
-    bytes32 keyTupleHash,
-    bool has,
-    uint40 index
-  ) internal {
+  function _set(ResourceId sourceTableId, bytes32 indexesHash, bytes32 keyTupleHash, bool has, uint40 index) internal {
     bytes memory _staticData = encodeStatic(has, index);
 
     EncodedLengths _encodedLengths;
     bytes memory _dynamicData;
 
-    bytes32[] memory _keyTuple = new bytes32[](4);
+    bytes32[] memory _keyTuple = new bytes32[](3);
     _keyTuple[0] = ResourceId.unwrap(sourceTableId);
     _keyTuple[1] = indexesHash;
-    _keyTuple[2] = valuesHash;
-    _keyTuple[3] = keyTupleHash;
+    _keyTuple[2] = keyTupleHash;
 
     StoreCore.setRecord(_tableId, _keyTuple, _staticData, _encodedLengths, _dynamicData, _fieldLayout);
   }
@@ -433,7 +366,6 @@ library BasicIdxUsedKeys {
     IStore _store,
     ResourceId sourceTableId,
     bytes32 indexesHash,
-    bytes32 valuesHash,
     bytes32 keyTupleHash,
     bool has,
     uint40 index
@@ -443,11 +375,10 @@ library BasicIdxUsedKeys {
     EncodedLengths _encodedLengths;
     bytes memory _dynamicData;
 
-    bytes32[] memory _keyTuple = new bytes32[](4);
+    bytes32[] memory _keyTuple = new bytes32[](3);
     _keyTuple[0] = ResourceId.unwrap(sourceTableId);
     _keyTuple[1] = indexesHash;
-    _keyTuple[2] = valuesHash;
-    _keyTuple[3] = keyTupleHash;
+    _keyTuple[2] = keyTupleHash;
 
     _store.setRecord(_tableId, _keyTuple, _staticData, _encodedLengths, _dynamicData);
   }
@@ -478,17 +409,11 @@ library BasicIdxUsedKeys {
   /**
    * @notice Delete all data for given keys.
    */
-  function deleteRecord(
-    ResourceId sourceTableId,
-    bytes32 indexesHash,
-    bytes32 valuesHash,
-    bytes32 keyTupleHash
-  ) internal {
-    bytes32[] memory _keyTuple = new bytes32[](4);
+  function deleteRecord(ResourceId sourceTableId, bytes32 indexesHash, bytes32 keyTupleHash) internal {
+    bytes32[] memory _keyTuple = new bytes32[](3);
     _keyTuple[0] = ResourceId.unwrap(sourceTableId);
     _keyTuple[1] = indexesHash;
-    _keyTuple[2] = valuesHash;
-    _keyTuple[3] = keyTupleHash;
+    _keyTuple[2] = keyTupleHash;
 
     StoreSwitch.deleteRecord(_tableId, _keyTuple);
   }
@@ -496,17 +421,11 @@ library BasicIdxUsedKeys {
   /**
    * @notice Delete all data for given keys.
    */
-  function _deleteRecord(
-    ResourceId sourceTableId,
-    bytes32 indexesHash,
-    bytes32 valuesHash,
-    bytes32 keyTupleHash
-  ) internal {
-    bytes32[] memory _keyTuple = new bytes32[](4);
+  function _deleteRecord(ResourceId sourceTableId, bytes32 indexesHash, bytes32 keyTupleHash) internal {
+    bytes32[] memory _keyTuple = new bytes32[](3);
     _keyTuple[0] = ResourceId.unwrap(sourceTableId);
     _keyTuple[1] = indexesHash;
-    _keyTuple[2] = valuesHash;
-    _keyTuple[3] = keyTupleHash;
+    _keyTuple[2] = keyTupleHash;
 
     StoreCore.deleteRecord(_tableId, _keyTuple, _fieldLayout);
   }
@@ -514,18 +433,11 @@ library BasicIdxUsedKeys {
   /**
    * @notice Delete all data for given keys (using the specified store).
    */
-  function deleteRecord(
-    IStore _store,
-    ResourceId sourceTableId,
-    bytes32 indexesHash,
-    bytes32 valuesHash,
-    bytes32 keyTupleHash
-  ) internal {
-    bytes32[] memory _keyTuple = new bytes32[](4);
+  function deleteRecord(IStore _store, ResourceId sourceTableId, bytes32 indexesHash, bytes32 keyTupleHash) internal {
+    bytes32[] memory _keyTuple = new bytes32[](3);
     _keyTuple[0] = ResourceId.unwrap(sourceTableId);
     _keyTuple[1] = indexesHash;
-    _keyTuple[2] = valuesHash;
-    _keyTuple[3] = keyTupleHash;
+    _keyTuple[2] = keyTupleHash;
 
     _store.deleteRecord(_tableId, _keyTuple);
   }
@@ -559,14 +471,12 @@ library BasicIdxUsedKeys {
   function encodeKeyTuple(
     ResourceId sourceTableId,
     bytes32 indexesHash,
-    bytes32 valuesHash,
     bytes32 keyTupleHash
   ) internal pure returns (bytes32[] memory) {
-    bytes32[] memory _keyTuple = new bytes32[](4);
+    bytes32[] memory _keyTuple = new bytes32[](3);
     _keyTuple[0] = ResourceId.unwrap(sourceTableId);
     _keyTuple[1] = indexesHash;
-    _keyTuple[2] = valuesHash;
-    _keyTuple[3] = keyTupleHash;
+    _keyTuple[2] = keyTupleHash;
 
     return _keyTuple;
   }

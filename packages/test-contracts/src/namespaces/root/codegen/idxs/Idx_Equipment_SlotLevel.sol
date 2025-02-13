@@ -54,22 +54,17 @@ library Idx_Equipment_SlotLevel {
     return BasicIdx_KeyTuple.length(_tableId, _indexesHash, _valuesHash);
   }
 
-  function hasKeyTuple(
-    EquipmentSlot slot,
-    uint32 level,
-    bytes32[] memory _keyTuple
-  ) internal view returns (bool _has, uint40 _index) {
-    bytes32 _valuesHash = valuesHash(slot, level);
+  function hasKeyTuple(bytes32[] memory _keyTuple) internal view returns (bool _has, uint40 _index) {
     bytes32 _keyTupleHash = keccak256(abi.encode(_keyTuple));
 
-    return BasicIdxUsedKeys.get(_tableId, _indexesHash, _valuesHash, _keyTupleHash);
+    return BasicIdxUsedKeys.get(_tableId, _indexesHash, _keyTupleHash);
   }
 
-  function has(EquipmentSlot slot, uint32 level, bytes32 entity) internal view returns (bool _has, uint40 _index) {
+  function has(bytes32 entity) internal view returns (bool _has, uint40 _index) {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = entity;
 
-    return hasKeyTuple(slot, level, _keyTuple);
+    return hasKeyTuple(_keyTuple);
   }
 
   function getKeyTuple(

@@ -113,7 +113,7 @@ contract BasicIdxHook is AbstractIdxHook {
     if (valuesHash == previousValuesHash) {
       // Initializing the record to a nullish value is a special case which should not be skipped
       // (by default tables only differentiate this state offchain, but BasicIdx allows this differentiation onchain too)
-      bool has = BasicIdxUsedKeys.getHas(sourceTableId, indexesHash, valuesHash, keyTupleHash);
+      bool has = BasicIdxUsedKeys.getHas(sourceTableId, indexesHash, keyTupleHash);
       if (has) {
         return;
       }
@@ -126,18 +126,18 @@ contract BasicIdxHook is AbstractIdxHook {
     BasicIdx_KeyTuple.push(sourceTableId, indexesHash, valuesHash, keyTuple);
     uint256 newLength = BasicIdx_KeyTuple.length(sourceTableId, indexesHash, valuesHash);
     uint40 newIndex = uint40(newLength - 1);
-    BasicIdxUsedKeys.set(sourceTableId, indexesHash, valuesHash, keyTupleHash, true, newIndex);
+    BasicIdxUsedKeys.set(sourceTableId, indexesHash, keyTupleHash, true, newIndex);
   }
 
   function _removeKeyTuple(ResourceId sourceTableId, bytes32 valuesHash, bytes32 keyTupleHash) internal {
-    (bool has, uint40 index) = BasicIdxUsedKeys.get(sourceTableId, indexesHash, valuesHash, keyTupleHash);
+    (bool has, uint40 index) = BasicIdxUsedKeys.get(sourceTableId, indexesHash, keyTupleHash);
 
     if (has) {
       uint256 length = BasicIdx_KeyTuple.length(sourceTableId, indexesHash, valuesHash);
       if (length <= 1) {
         // Delete the record if this is the last item
         BasicIdx.deleteRecord(sourceTableId, indexesHash, valuesHash);
-        BasicIdxUsedKeys.deleteRecord(sourceTableId, indexesHash, valuesHash, keyTupleHash);
+        BasicIdxUsedKeys.deleteRecord(sourceTableId, indexesHash, keyTupleHash);
       } else {
         // Removal is only possible via pop, so swap if necessary
         uint256 lastIndex = length - 1;
@@ -151,17 +151,11 @@ contract BasicIdxHook is AbstractIdxHook {
             keyTupleLength
           );
           BasicIdx_KeyTuple.update(sourceTableId, indexesHash, valuesHash, index, keyTupleToSwap);
-          BasicIdxUsedKeys.setIndex(
-            sourceTableId,
-            indexesHash,
-            valuesHash,
-            keccak256(abi.encode(keyTupleToSwap)),
-            index
-          );
+          BasicIdxUsedKeys.setIndex(sourceTableId, indexesHash, keccak256(abi.encode(keyTupleToSwap)), index);
         }
         // Pop the item
         BasicIdx_KeyTuple.pop(sourceTableId, indexesHash, valuesHash, keyTupleLength);
-        BasicIdxUsedKeys.deleteRecord(sourceTableId, indexesHash, valuesHash, keyTupleHash);
+        BasicIdxUsedKeys.deleteRecord(sourceTableId, indexesHash, keyTupleHash);
       }
     }
   }
