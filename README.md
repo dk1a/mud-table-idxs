@@ -88,7 +88,7 @@ Finally call `generate-idxs.ts` in your `package.json`, **before(!)** `mud build
 
 `idx` is used for these onchain table indexes, instead of `index`, which is too generic a term and hard to search/refactor.
 
-`mud-table-idxs` are beast compared to MUD's [KeysWithValue module](https://mud.dev/world/modules/keyswithvalue), which is essentially a basic onchain index, but it only indexes all non-key values at once, and has no typed codegen.
+`mud-table-idxs` are best compared to MUD's [KeysWithValue module](https://mud.dev/world/modules/keyswithvalue), which is essentially a basic onchain index, but it only indexes all non-key values at once, and has no typed codegen.
 
 `mud-table-idxs` indexes any combination of fields, which can include key fields.
 
