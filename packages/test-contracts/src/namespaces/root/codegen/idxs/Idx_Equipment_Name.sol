@@ -16,29 +16,24 @@ import { BasicIdx } from "@dk1a/mud-table-idxs/src/namespaces/basicIdx/codegen/t
 import { BasicIdxUsedKeys } from "@dk1a/mud-table-idxs/src/namespaces/basicIdx/codegen/tables/BasicIdxUsedKeys.sol";
 import { BasicIdx_KeyTuple } from "@dk1a/mud-table-idxs/src/namespaces/basicIdx/BasicIdx_KeyTuple.sol";
 
-// Import user types
-import { EquipmentSlot } from "../../../../codegen/common.sol";
-
-library Idx_Equipment_SlotLevel {
+library Idx_Equipment_Name {
   // Hex below is the result of `WorldResourceIdLib.encode({ namespace: "", name: "Equipment", typeId: RESOURCE_TABLE });`
   ResourceId constant _tableId = ResourceId.wrap(0x7462000000000000000000000000000045717569706d656e7400000000000000);
 
   uint256 constant _keyNumber = 0;
-  uint256 constant _fieldNumber = 2;
+  uint256 constant _fieldNumber = 1;
 
   Uint8Map constant _keyIndexes = Uint8Map.wrap(0x0000000000000000000000000000000000000000000000000000000000000000);
-  Uint8Map constant _fieldIndexes = Uint8Map.wrap(0x0200010000000000000000000000000000000000000000000000000000000000);
+  Uint8Map constant _fieldIndexes = Uint8Map.wrap(0x0102000000000000000000000000000000000000000000000000000000000000);
 
-  bytes32 constant _indexesHash = 0x36f0a75b24c1547988d2e27f1f53265ed2da7d466092d4c19b893af31ee6937b;
+  bytes32 constant _indexesHash = 0xf8b937f303537c151ab86b1412ca46823ac65787c74ed31ef0907b77eb93bdc1;
 
-  function valuesHash(EquipmentSlot slot, uint32 level) internal pure returns (bytes32) {
+  function valuesHash(string memory name) internal pure returns (bytes32) {
     bytes32[] memory _partialKeyTuple = new bytes32[](_keyNumber);
 
     bytes[] memory _partialValues = new bytes[](_fieldNumber);
 
-    _partialValues[0] = abi.encodePacked(uint8(slot));
-
-    _partialValues[1] = abi.encodePacked((level));
+    _partialValues[0] = bytes((name));
 
     return hashValues(_partialKeyTuple, _partialValues);
   }
@@ -48,8 +43,8 @@ library Idx_Equipment_SlotLevel {
     registerBasicIdx(_tableId, _keyIndexes, _fieldIndexes);
   }
 
-  function length(EquipmentSlot slot, uint32 level) internal view returns (uint256) {
-    bytes32 _valuesHash = valuesHash(slot, level);
+  function length(string memory name) internal view returns (uint256) {
+    bytes32 _valuesHash = valuesHash(name);
 
     return BasicIdx_KeyTuple.length(_tableId, _indexesHash, _valuesHash);
   }
@@ -67,18 +62,14 @@ library Idx_Equipment_SlotLevel {
     return hasKeyTuple(_keyTuple);
   }
 
-  function getKeyTuple(
-    EquipmentSlot slot,
-    uint32 level,
-    uint256 _index
-  ) internal view returns (bytes32[] memory _keyTuple) {
-    bytes32 _valuesHash = valuesHash(slot, level);
+  function getKeyTuple(string memory name, uint256 _index) internal view returns (bytes32[] memory _keyTuple) {
+    bytes32 _valuesHash = valuesHash(name);
 
     return BasicIdx_KeyTuple.getItem(_tableId, _indexesHash, _valuesHash, _index, 1);
   }
 
-  function get(EquipmentSlot slot, uint32 level, uint256 _index) internal view returns (bytes32 entity) {
-    bytes32[] memory _keyTuple = getKeyTuple(slot, level, _index);
+  function get(string memory name, uint256 _index) internal view returns (bytes32 entity) {
+    bytes32[] memory _keyTuple = getKeyTuple(name, _index);
 
     entity = _keyTuple[0];
   }

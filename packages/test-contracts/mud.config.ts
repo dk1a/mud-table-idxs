@@ -23,16 +23,25 @@ export default defineWorld({
           key: ["entity"],
           schema: {
             entity: "bytes32",
-            slot: "EquipmentSlot",
+            equipmentType: "EquipmentType",
             level: "uint32",
             name: "string",
+            slots: "bytes32[]",
           },
         },
       },
     },
   },
   enums: {
-    EquipmentSlot: ["Armor", "Weapon"],
+    EquipmentType: ["Armor", "Weapon"],
   },
-  modules: [basicIdxModule, uniqueIdxModule],
+  modules: [
+    {
+      artifactPath: "@latticexyz/world-modules/out/StandardDelegationsModule.sol/StandardDelegationsModule.json",
+      root: true,
+      args: [],
+    },
+    basicIdxModule,
+    uniqueIdxModule,
+  ],
 });

@@ -20,10 +20,10 @@
     "package.json": "pnpm fix:package-json"
   },
   "devDependencies": {
-    "@latticexyz/cli": "2.2.14",
-    "@latticexyz/common": "2.2.14",
-    "@latticexyz/explorer": "2.2.14",
-    "@latticexyz/store-indexer": "2.2.14",
+    "@latticexyz/cli": "2.2.20",
+    "@latticexyz/common": "2.2.20",
+    "@latticexyz/explorer": "2.2.20",
+    "@latticexyz/store-indexer": "2.2.20",
     "@types/debug": "4.1.7",
     "@typescript-eslint/eslint-plugin": "7.1.1",
     "@typescript-eslint/parser": "7.1.1",

@@ -18,12 +18,12 @@
   },
   "dependencies": {
     "@dk1a/mud-table-idxs": "workspace:*",
-    "@latticexyz/cli": "2.2.14",
-    "@latticexyz/gas-report": "2.2.14",
-    "@latticexyz/schema-type": "2.2.14",
-    "@latticexyz/store": "2.2.14",
-    "@latticexyz/world": "2.2.14",
-    "@latticexyz/world-modules": "2.2.14"
+    "@latticexyz/cli": "2.2.20",
+    "@latticexyz/gas-report": "2.2.20",
+    "@latticexyz/schema-type": "2.2.20",
+    "@latticexyz/store": "2.2.20",
+    "@latticexyz/world": "2.2.20",
+    "@latticexyz/world-modules": "2.2.20"
   },
   "devDependencies": {
     "@types/node": "^18.15.11",
@@ -32,7 +32,7 @@
     "prettier": "3.4.2",
     "prettier-plugin-solidity": "1.4.2",
     "solhint": "^5.0.5",
-    "solhint-config-mud": "2.2.14",
-    "solhint-plugin-mud": "2.2.14"
+    "solhint-config-mud": "2.2.20",
+    "solhint-plugin-mud": "2.2.20"
   }
 }

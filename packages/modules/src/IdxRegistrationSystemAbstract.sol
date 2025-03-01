@@ -46,7 +46,7 @@ abstract contract IdxRegistrationSystemAbstract is System {
     // The first 2 access checks mirror registerStoreHook
     // Require the table's namespace to exist
     AccessControl.requireExistence(sourceTableId.getNamespaceId());
-    // Require caller to own the namespace
+    // Require caller to own the table
     AccessControl.requireOwner(sourceTableId, _msgSender());
 
     // Key and field indexes must be ordered (ascending) and unique
@@ -59,8 +59,7 @@ abstract contract IdxRegistrationSystemAbstract is System {
     fieldLayout = world.getFieldLayout(sourceTableId);
     keyTupleLength = keySchema.numFields();
 
-    // At least 1 field index is required
-    // Primary key should not be made redundant by forcing a subset of it to be unique
+    // Must not be completely empty
     if (fieldIndexes.length() == 0 && keyIndexes.length() == 0) {
       revert IdxRegistrationSystem_KeyAndFieldIndexesAbsent();
     }
@@ -94,7 +93,7 @@ abstract contract IdxRegistrationSystemAbstract is System {
       return;
     }
 
-    // Assign the 0th elementg to be the highest and skip order/uniqueness checks
+    // Assign the 0th element to be the highest and skip order/uniqueness checks
     uint256 highest = uint8Map.atIndex(0);
 
     for (uint256 i = 1; i < uint8Map.length(); i++) {
@@ -120,7 +119,7 @@ abstract contract IdxRegistrationSystemAbstract is System {
     uint256 staticFieldIndexesLength;
     uint256 dynamicFieldIndexesLength;
     for (uint256 i; i < fieldIndexes.length(); i++) {
-      if (fieldIndexes.atIndex(0) < dynamicIndexStart) {
+      if (fieldIndexes.atIndex(i) < dynamicIndexStart) {
         staticFieldIndexesLength += 1;
       } else {
         dynamicFieldIndexesLength += 1;

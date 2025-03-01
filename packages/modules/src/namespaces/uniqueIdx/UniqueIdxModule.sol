@@ -16,11 +16,11 @@ contract UniqueIdxModule is Module {
   // known tables, we can deploy it once and register it in multiple Worlds.
   UniqueIdxRegistrationSystem private immutable uniqueIdxRegistrationSystem = new UniqueIdxRegistrationSystem();
 
-  function installRoot(bytes memory) public pure {
+  function installRoot(bytes memory) public pure override {
     revert Module_RootInstallNotSupported();
   }
 
-  function install(bytes memory) public {
+  function install(bytes memory) public override {
     IBaseWorld world = IBaseWorld(_world());
 
     // Register namespace

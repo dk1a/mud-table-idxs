@@ -25,89 +25,73 @@ contract BasicIdxHook is AbstractIdxHook {
   function onBeforeSetRecord(
     ResourceId sourceTableId,
     bytes32[] memory keyTuple,
-    bytes memory,
-    EncodedLengths,
-    bytes memory,
+    bytes memory staticData,
+    EncodedLengths encodedLengths,
+    bytes memory dynamicData,
     FieldLayout
   ) public override {
-    previousValuesHash = _getValuesHash(sourceTableId, keyTuple);
-  }
+    bytes[] memory partialValues = _getPartialValuesSetRecord(staticData, encodedLengths, dynamicData);
+    bytes32 valuesHash = _getValuesHash(keyTuple, partialValues);
 
-  function onAfterSetRecord(
-    ResourceId sourceTableId,
-    bytes32[] memory keyTuple,
-    bytes memory,
-    EncodedLengths,
-    bytes memory,
-    FieldLayout
-  ) public override {
-    _updateValuesHash(sourceTableId, keyTuple);
+    _updateValuesHash(sourceTableId, keyTuple, valuesHash);
   }
 
   function onBeforeSpliceStaticData(
     ResourceId sourceTableId,
     bytes32[] memory keyTuple,
-    uint48,
-    bytes memory
+    uint48 start,
+    bytes memory data
   ) public override {
-    if (!_withStatic()) return;
+    if (!_withStatic(start)) return;
 
-    previousValuesHash = _getValuesHash(sourceTableId, keyTuple);
-  }
+    bytes[] memory partialValues = _getPartialValuesSpliceStatic(sourceTableId, keyTuple, start, data);
+    bytes32 valuesHash = _getValuesHash(keyTuple, partialValues);
 
-  function onAfterSpliceStaticData(
-    ResourceId sourceTableId,
-    bytes32[] memory keyTuple,
-    uint48,
-    bytes memory
-  ) public override {
-    if (!_withStatic()) return;
-
-    _updateValuesHash(sourceTableId, keyTuple);
+    _updateValuesHash(sourceTableId, keyTuple, valuesHash);
   }
 
   function onBeforeSpliceDynamicData(
     ResourceId sourceTableId,
     bytes32[] memory keyTuple,
     uint8 dynamicFieldIndex,
-    uint40,
-    uint40,
-    EncodedLengths,
-    bytes memory
+    uint40 startWithinField,
+    uint40 deleteCount,
+    EncodedLengths encodedLengths,
+    bytes memory data
   ) public override {
     if (!_withDynamic(dynamicFieldIndex)) return;
 
-    previousValuesHash = _getValuesHash(sourceTableId, keyTuple);
-  }
+    bytes[] memory partialValues = _getPartialValuesSpliceDynamic(
+      sourceTableId,
+      keyTuple,
+      dynamicFieldIndex,
+      startWithinField,
+      deleteCount,
+      encodedLengths,
+      data
+    );
 
-  function onAfterSpliceDynamicData(
-    ResourceId sourceTableId,
-    bytes32[] memory keyTuple,
-    uint8 dynamicFieldIndex,
-    uint40,
-    uint40,
-    EncodedLengths,
-    bytes memory
-  ) public override {
-    if (!_withDynamic(dynamicFieldIndex)) return;
+    bytes32 valuesHash = _getValuesHash(keyTuple, partialValues);
 
-    _updateValuesHash(sourceTableId, keyTuple);
+    _updateValuesHash(sourceTableId, keyTuple, valuesHash);
   }
 
   function onBeforeDeleteRecord(ResourceId sourceTableId, bytes32[] memory keyTuple, FieldLayout) public override {
-    // Get the previous valuesHash
-    bytes32 valuesHash = _getValuesHash(sourceTableId, keyTuple);
+    // Compute the previous valuesHash
+    bytes[] memory previousPartialValues = _getPartialValues(sourceTableId, keyTuple);
+    bytes32 previousValuesHash = _getValuesHash(keyTuple, previousPartialValues);
 
     // Clear the previous valuesHash
-    _removeKeyTuple(sourceTableId, valuesHash, keccak256(abi.encode(keyTuple)));
+    _removeKeyTuple(sourceTableId, previousValuesHash, keccak256(abi.encode(keyTuple)));
   }
 
-  // For onAfter hooks
-  function _updateValuesHash(ResourceId sourceTableId, bytes32[] memory keyTuple) internal {
+  // For onBefore hooks
+  function _updateValuesHash(ResourceId sourceTableId, bytes32[] memory keyTuple, bytes32 valuesHash) internal {
     bytes32 keyTupleHash = keccak256(abi.encode(keyTuple));
 
-    // Get the new valuesHash
-    bytes32 valuesHash = _getValuesHash(sourceTableId, keyTuple);
+    // Compute the previous valuesHash (relies on being called in onBefore hooks)
+    bytes[] memory previousPartialValues = _getPartialValues(sourceTableId, keyTuple);
+    bytes32 previousValuesHash = _getValuesHash(keyTuple, previousPartialValues);
 
     // Skip remove+push if nothing would change, to save gas
     if (valuesHash == previousValuesHash) {

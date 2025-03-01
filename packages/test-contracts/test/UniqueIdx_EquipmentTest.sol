@@ -8,53 +8,67 @@ import { UniqueIdxHook } from "@dk1a/mud-table-idxs/src/namespaces/uniqueIdx/Uni
 
 import { BaseTest } from "./BaseTest.t.sol";
 
-import { EquipmentSlot } from "../src/codegen/common.sol";
+import { EquipmentType } from "../src/codegen/common.sol";
 import { Equipment } from "../src/namespaces/root/codegen/tables/Equipment.sol";
-import { UniqueIdx_Equipment_SlotName } from "../src/namespaces/root/codegen/idxs/UniqueIdx_Equipment_SlotName.sol";
+import { UniqueIdx_Equipment_TypeName } from "../src/namespaces/root/codegen/idxs/UniqueIdx_Equipment_TypeName.sol";
 
-// Indexed columns: slot, name
+struct TestData {
+  bytes32 entity;
+  EquipmentType equipmentType;
+  uint32 level;
+  string name;
+  bytes32[] slots;
+}
+
 contract UniqueIdx_EquipmentTest is BaseTest {
   address hookAddress;
+
+  TestData d1;
 
   function setUp() public virtual override {
     super.setUp();
 
-    hookAddress = UniqueIdxMetadata.getHookAddress(Equipment._tableId, UniqueIdx_Equipment_SlotName._indexesHash);
+    // This idx is not globally registered in PostDeploy
+    uint256 deployerPrivateKey = vm.envUint("PRIVATE_KEY");
+    vm.startPrank(vm.addr(deployerPrivateKey));
+    UniqueIdx_Equipment_TypeName.register();
+    vm.stopPrank();
+
+    hookAddress = UniqueIdxMetadata.getHookAddress(Equipment._tableId, UniqueIdx_Equipment_TypeName._indexesHash);
+
+    bytes32[] memory d1Slots = new bytes32[](1);
+    d1Slots[0] = "Hands";
+    d1 = TestData({ entity: hex"1a", equipmentType: EquipmentType.Armor, level: 5, name: "gloves", slots: d1Slots });
   }
 
-  function _expectCallSetHook() internal {
-    vm.expectCall(hookAddress, abi.encodeWithSelector(IStoreHook.onBeforeSetRecord.selector, Equipment._tableId), 1);
-    vm.expectCall(hookAddress, abi.encodeWithSelector(IStoreHook.onAfterSetRecord.selector, Equipment._tableId), 1);
-
-    vm.expectCall(hookAddress, abi.encodeWithSelector(IStoreHook.onBeforeSpliceStaticData.selector), 0);
-    vm.expectCall(hookAddress, abi.encodeWithSelector(IStoreHook.onAfterSpliceStaticData.selector), 0);
-    vm.expectCall(hookAddress, abi.encodeWithSelector(IStoreHook.onBeforeSpliceDynamicData.selector), 0);
-    vm.expectCall(hookAddress, abi.encodeWithSelector(IStoreHook.onAfterSpliceDynamicData.selector), 0);
-    vm.expectCall(hookAddress, abi.encodeWithSelector(IStoreHook.onBeforeDeleteRecord.selector), 0);
-    vm.expectCall(hookAddress, abi.encodeWithSelector(IStoreHook.onAfterDeleteRecord.selector), 0);
+  function _expectCallHook(
+    uint64 setRecordCount,
+    uint64 spliceStaticCount,
+    uint64 spliceDynamicCount,
+    uint64 deleteCount
+  ) internal {
+    _expectCallHook({
+      hookAddress: hookAddress,
+      tableId: Equipment._tableId,
+      setRecordCount: setRecordCount,
+      spliceStaticCount: spliceStaticCount,
+      spliceDynamicCount: spliceDynamicCount,
+      deleteCount: deleteCount
+    });
   }
 
   function testGet() public {
-    bytes32 entity = hex"1a";
-    EquipmentSlot slot = EquipmentSlot.Armor;
-    uint32 level = 5;
-    string memory name = "gloves";
+    _expectCallHook({ setRecordCount: 1, spliceStaticCount: 0, spliceDynamicCount: 0, deleteCount: 0 });
 
-    _expectCallSetHook();
+    Equipment.set(d1.entity, d1.equipmentType, d1.level, d1.name, d1.slots);
 
-    Equipment.set(entity, slot, level, name);
-
-    assertEq(UniqueIdx_Equipment_SlotName.get(slot, name), entity);
+    assertEq(UniqueIdx_Equipment_TypeName.get(d1.equipmentType, d1.name), d1.entity);
   }
 
   function testSetUniqueDuplicateError() public {
-    EquipmentSlot slot = EquipmentSlot.Armor;
-    uint32 level = 5;
-    string memory name = "gloves";
-
-    Equipment.set(hex"1a", slot, level, name);
+    Equipment.set(d1.entity, d1.equipmentType, d1.level, d1.name, d1.slots);
 
     vm.expectPartialRevert(UniqueIdxHook.UniqueIdxHook_UniqueValueDuplicate.selector);
-    Equipment.set(hex"1b", slot, level, name);
+    Equipment.set(hex"1b", d1.equipmentType, d1.level, d1.name, d1.slots);
   }
 }

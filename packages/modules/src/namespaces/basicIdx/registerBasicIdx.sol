@@ -2,7 +2,7 @@
 pragma solidity >=0.8.28;
 
 import { ResourceId } from "@latticexyz/store/src/ResourceId.sol";
-import { ALL, AFTER_DELETE_RECORD } from "@latticexyz/store/src/storeHookTypes.sol";
+import { BEFORE_ALL } from "@latticexyz/store/src/storeHookTypes.sol";
 
 import { StoreRegistrationSystem } from "@latticexyz/world/src/modules/init/implementations/StoreRegistrationSystem.sol";
 
@@ -31,15 +31,5 @@ function registerBasicIdx(ResourceId sourceTableId, Uint8Map keyIndexes, Uint8Ma
   // (this can't be done inside the system because the caller must own the arbitrary source table)
   // TODO IBaseWorld should be used instead of StoreRegistrationSystem,
   // but due to inheritance in RegistrationSystem not being included in worldgen, IBaseWorld lacks its methods
-  SystemSwitch.call(
-    abi.encodeCall(
-      StoreRegistrationSystem.registerStoreHook,
-      (
-        sourceTableId,
-        hook,
-        // Every hook except AFTER_DELETE_RECORD
-        ALL & (~AFTER_DELETE_RECORD)
-      )
-    )
-  );
+  SystemSwitch.call(abi.encodeCall(StoreRegistrationSystem.registerStoreHook, (sourceTableId, hook, BEFORE_ALL)));
 }

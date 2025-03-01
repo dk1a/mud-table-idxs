@@ -7,8 +7,8 @@ export default defineStoreIdxs(
       root: {
         tables: {
           Equipment: {
-            UniqueIdx_Equipment_SlotName: {
-              fields: ["slot", "name"],
+            UniqueIdx_Equipment_TypeName: {
+              fields: ["equipmentType", "name"],
               unique: true,
             },
             // Not meaningful indexes, just testing various configs
@@ -16,12 +16,20 @@ export default defineStoreIdxs(
               fields: ["entity"],
               unique: false,
             },
-            Idx_Equipment_SlotLevel: {
-              fields: ["slot", "level"],
-              unique: false,
-            },
             Idx_Equipment_Level: {
               fields: ["level"],
+              unique: false,
+            },
+            Idx_Equipment_TypeLevel: {
+              fields: ["equipmentType", "level"],
+              unique: false,
+            },
+            Idx_Equipment_Name: {
+              fields: ["name"],
+              unique: false,
+            },
+            Idx_Equipment_TypeNameSlots: {
+              fields: ["equipmentType", "name", "slots"],
               unique: false,
             },
           },

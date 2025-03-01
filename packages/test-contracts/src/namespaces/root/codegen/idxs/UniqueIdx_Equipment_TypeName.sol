@@ -15,9 +15,9 @@ import { registerUniqueIdx } from "@dk1a/mud-table-idxs/src/namespaces/uniqueIdx
 import { UniqueIdx } from "@dk1a/mud-table-idxs/src/namespaces/uniqueIdx/codegen/tables/UniqueIdx.sol";
 
 // Import user types
-import { EquipmentSlot } from "../../../../codegen/common.sol";
+import { EquipmentType } from "../../../../codegen/common.sol";
 
-library UniqueIdx_Equipment_SlotName {
+library UniqueIdx_Equipment_TypeName {
   // Hex below is the result of `WorldResourceIdLib.encode({ namespace: "", name: "Equipment", typeId: RESOURCE_TABLE });`
   ResourceId constant _tableId = ResourceId.wrap(0x7462000000000000000000000000000045717569706d656e7400000000000000);
 
@@ -29,12 +29,12 @@ library UniqueIdx_Equipment_SlotName {
 
   bytes32 constant _indexesHash = 0xc5b3d1bcb4537e0f59045c610d26e1b8695de46428683ca630b31174203c999c;
 
-  function valuesHash(EquipmentSlot slot, string memory name) internal pure returns (bytes32) {
+  function valuesHash(EquipmentType equipmentType, string memory name) internal pure returns (bytes32) {
     bytes32[] memory _partialKeyTuple = new bytes32[](_keyNumber);
 
     bytes[] memory _partialValues = new bytes[](_fieldNumber);
 
-    _partialValues[0] = abi.encodePacked(uint8(slot));
+    _partialValues[0] = abi.encodePacked(uint8(equipmentType));
 
     _partialValues[1] = bytes((name));
 
@@ -46,20 +46,23 @@ library UniqueIdx_Equipment_SlotName {
     registerUniqueIdx(_tableId, _keyIndexes, _fieldIndexes);
   }
 
-  function has(EquipmentSlot slot, string memory name) internal view returns (bool) {
-    bytes32 _valuesHash = valuesHash(slot, name);
+  function has(EquipmentType equipmentType, string memory name) internal view returns (bool) {
+    bytes32 _valuesHash = valuesHash(equipmentType, name);
 
     return UniqueIdx.length(_tableId, _indexesHash, _valuesHash) > 0;
   }
 
-  function getKeyTuple(EquipmentSlot slot, string memory name) internal view returns (bytes32[] memory _keyTuple) {
-    bytes32 _valuesHash = valuesHash(slot, name);
+  function getKeyTuple(
+    EquipmentType equipmentType,
+    string memory name
+  ) internal view returns (bytes32[] memory _keyTuple) {
+    bytes32 _valuesHash = valuesHash(equipmentType, name);
 
     return UniqueIdx.get(_tableId, _indexesHash, _valuesHash);
   }
 
-  function get(EquipmentSlot slot, string memory name) internal view returns (bytes32 entity) {
-    bytes32[] memory _keyTuple = getKeyTuple(slot, name);
+  function get(EquipmentType equipmentType, string memory name) internal view returns (bytes32 entity) {
+    bytes32[] memory _keyTuple = getKeyTuple(equipmentType, name);
 
     entity = _keyTuple[0];
   }

@@ -17,12 +17,13 @@ import { EncodedLengths, EncodedLengthsLib } from "@latticexyz/store/src/Encoded
 import { ResourceId } from "@latticexyz/store/src/ResourceId.sol";
 
 // Import user types
-import { EquipmentSlot } from "../../../../codegen/common.sol";
+import { EquipmentType } from "../../../../codegen/common.sol";
 
 struct EquipmentData {
-  EquipmentSlot slot;
+  EquipmentType equipmentType;
   uint32 level;
   string name;
+  bytes32[] slots;
 }
 
 library Equipment {
@@ -30,12 +31,12 @@ library Equipment {
   ResourceId constant _tableId = ResourceId.wrap(0x7462000000000000000000000000000045717569706d656e7400000000000000);
 
   FieldLayout constant _fieldLayout =
-    FieldLayout.wrap(0x0005020101040000000000000000000000000000000000000000000000000000);
+    FieldLayout.wrap(0x0005020201040000000000000000000000000000000000000000000000000000);
 
   // Hex-encoded key schema of (bytes32)
   Schema constant _keySchema = Schema.wrap(0x002001005f000000000000000000000000000000000000000000000000000000);
-  // Hex-encoded value schema of (uint8, uint32, string)
-  Schema constant _valueSchema = Schema.wrap(0x000502010003c500000000000000000000000000000000000000000000000000);
+  // Hex-encoded value schema of (uint8, uint32, string, bytes32[])
+  Schema constant _valueSchema = Schema.wrap(0x000502020003c5c1000000000000000000000000000000000000000000000000);
 
   /**
    * @notice Get the table's key field names.
@@ -51,10 +52,11 @@ library Equipment {
    * @return fieldNames An array of strings with the names of value fields.
    */
   function getFieldNames() internal pure returns (string[] memory fieldNames) {
-    fieldNames = new string[](3);
-    fieldNames[0] = "slot";
+    fieldNames = new string[](4);
+    fieldNames[0] = "equipmentType";
     fieldNames[1] = "level";
     fieldNames[2] = "name";
+    fieldNames[3] = "slots";
   }
 
   /**
@@ -72,45 +74,45 @@ library Equipment {
   }
 
   /**
-   * @notice Get slot.
+   * @notice Get equipmentType.
    */
-  function getSlot(bytes32 entity) internal view returns (EquipmentSlot slot) {
+  function getEquipmentType(bytes32 entity) internal view returns (EquipmentType equipmentType) {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = entity;
 
     bytes32 _blob = StoreSwitch.getStaticField(_tableId, _keyTuple, 0, _fieldLayout);
-    return EquipmentSlot(uint8(bytes1(_blob)));
+    return EquipmentType(uint8(bytes1(_blob)));
   }
 
   /**
-   * @notice Get slot.
+   * @notice Get equipmentType.
    */
-  function _getSlot(bytes32 entity) internal view returns (EquipmentSlot slot) {
+  function _getEquipmentType(bytes32 entity) internal view returns (EquipmentType equipmentType) {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = entity;
 
     bytes32 _blob = StoreCore.getStaticField(_tableId, _keyTuple, 0, _fieldLayout);
-    return EquipmentSlot(uint8(bytes1(_blob)));
+    return EquipmentType(uint8(bytes1(_blob)));
   }
 
   /**
-   * @notice Set slot.
+   * @notice Set equipmentType.
    */
-  function setSlot(bytes32 entity, EquipmentSlot slot) internal {
+  function setEquipmentType(bytes32 entity, EquipmentType equipmentType) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = entity;
 
-    StoreSwitch.setStaticField(_tableId, _keyTuple, 0, abi.encodePacked(uint8(slot)), _fieldLayout);
+    StoreSwitch.setStaticField(_tableId, _keyTuple, 0, abi.encodePacked(uint8(equipmentType)), _fieldLayout);
   }
 
   /**
-   * @notice Set slot.
+   * @notice Set equipmentType.
    */
-  function _setSlot(bytes32 entity, EquipmentSlot slot) internal {
+  function _setEquipmentType(bytes32 entity, EquipmentType equipmentType) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = entity;
 
-    StoreCore.setStaticField(_tableId, _keyTuple, 0, abi.encodePacked(uint8(slot)), _fieldLayout);
+    StoreCore.setStaticField(_tableId, _keyTuple, 0, abi.encodePacked(uint8(equipmentType)), _fieldLayout);
   }
 
   /**
@@ -318,6 +320,168 @@ library Equipment {
   }
 
   /**
+   * @notice Get slots.
+   */
+  function getSlots(bytes32 entity) internal view returns (bytes32[] memory slots) {
+    bytes32[] memory _keyTuple = new bytes32[](1);
+    _keyTuple[0] = entity;
+
+    bytes memory _blob = StoreSwitch.getDynamicField(_tableId, _keyTuple, 1);
+    return (SliceLib.getSubslice(_blob, 0, _blob.length).decodeArray_bytes32());
+  }
+
+  /**
+   * @notice Get slots.
+   */
+  function _getSlots(bytes32 entity) internal view returns (bytes32[] memory slots) {
+    bytes32[] memory _keyTuple = new bytes32[](1);
+    _keyTuple[0] = entity;
+
+    bytes memory _blob = StoreCore.getDynamicField(_tableId, _keyTuple, 1);
+    return (SliceLib.getSubslice(_blob, 0, _blob.length).decodeArray_bytes32());
+  }
+
+  /**
+   * @notice Set slots.
+   */
+  function setSlots(bytes32 entity, bytes32[] memory slots) internal {
+    bytes32[] memory _keyTuple = new bytes32[](1);
+    _keyTuple[0] = entity;
+
+    StoreSwitch.setDynamicField(_tableId, _keyTuple, 1, EncodeArray.encode((slots)));
+  }
+
+  /**
+   * @notice Set slots.
+   */
+  function _setSlots(bytes32 entity, bytes32[] memory slots) internal {
+    bytes32[] memory _keyTuple = new bytes32[](1);
+    _keyTuple[0] = entity;
+
+    StoreCore.setDynamicField(_tableId, _keyTuple, 1, EncodeArray.encode((slots)));
+  }
+
+  /**
+   * @notice Get the length of slots.
+   */
+  function lengthSlots(bytes32 entity) internal view returns (uint256) {
+    bytes32[] memory _keyTuple = new bytes32[](1);
+    _keyTuple[0] = entity;
+
+    uint256 _byteLength = StoreSwitch.getDynamicFieldLength(_tableId, _keyTuple, 1);
+    unchecked {
+      return _byteLength / 32;
+    }
+  }
+
+  /**
+   * @notice Get the length of slots.
+   */
+  function _lengthSlots(bytes32 entity) internal view returns (uint256) {
+    bytes32[] memory _keyTuple = new bytes32[](1);
+    _keyTuple[0] = entity;
+
+    uint256 _byteLength = StoreCore.getDynamicFieldLength(_tableId, _keyTuple, 1);
+    unchecked {
+      return _byteLength / 32;
+    }
+  }
+
+  /**
+   * @notice Get an item of slots.
+   * @dev Reverts with Store_IndexOutOfBounds if `_index` is out of bounds for the array.
+   */
+  function getItemSlots(bytes32 entity, uint256 _index) internal view returns (bytes32) {
+    bytes32[] memory _keyTuple = new bytes32[](1);
+    _keyTuple[0] = entity;
+
+    unchecked {
+      bytes memory _blob = StoreSwitch.getDynamicFieldSlice(_tableId, _keyTuple, 1, _index * 32, (_index + 1) * 32);
+      return (bytes32(_blob));
+    }
+  }
+
+  /**
+   * @notice Get an item of slots.
+   * @dev Reverts with Store_IndexOutOfBounds if `_index` is out of bounds for the array.
+   */
+  function _getItemSlots(bytes32 entity, uint256 _index) internal view returns (bytes32) {
+    bytes32[] memory _keyTuple = new bytes32[](1);
+    _keyTuple[0] = entity;
+
+    unchecked {
+      bytes memory _blob = StoreCore.getDynamicFieldSlice(_tableId, _keyTuple, 1, _index * 32, (_index + 1) * 32);
+      return (bytes32(_blob));
+    }
+  }
+
+  /**
+   * @notice Push an element to slots.
+   */
+  function pushSlots(bytes32 entity, bytes32 _element) internal {
+    bytes32[] memory _keyTuple = new bytes32[](1);
+    _keyTuple[0] = entity;
+
+    StoreSwitch.pushToDynamicField(_tableId, _keyTuple, 1, abi.encodePacked((_element)));
+  }
+
+  /**
+   * @notice Push an element to slots.
+   */
+  function _pushSlots(bytes32 entity, bytes32 _element) internal {
+    bytes32[] memory _keyTuple = new bytes32[](1);
+    _keyTuple[0] = entity;
+
+    StoreCore.pushToDynamicField(_tableId, _keyTuple, 1, abi.encodePacked((_element)));
+  }
+
+  /**
+   * @notice Pop an element from slots.
+   */
+  function popSlots(bytes32 entity) internal {
+    bytes32[] memory _keyTuple = new bytes32[](1);
+    _keyTuple[0] = entity;
+
+    StoreSwitch.popFromDynamicField(_tableId, _keyTuple, 1, 32);
+  }
+
+  /**
+   * @notice Pop an element from slots.
+   */
+  function _popSlots(bytes32 entity) internal {
+    bytes32[] memory _keyTuple = new bytes32[](1);
+    _keyTuple[0] = entity;
+
+    StoreCore.popFromDynamicField(_tableId, _keyTuple, 1, 32);
+  }
+
+  /**
+   * @notice Update an element of slots at `_index`.
+   */
+  function updateSlots(bytes32 entity, uint256 _index, bytes32 _element) internal {
+    bytes32[] memory _keyTuple = new bytes32[](1);
+    _keyTuple[0] = entity;
+
+    unchecked {
+      bytes memory _encoded = abi.encodePacked((_element));
+      StoreSwitch.spliceDynamicData(_tableId, _keyTuple, 1, uint40(_index * 32), uint40(_encoded.length), _encoded);
+    }
+  }
+
+  /**
+   * @notice Update an element of slots at `_index`.
+   */
+  function _updateSlots(bytes32 entity, uint256 _index, bytes32 _element) internal {
+    bytes32[] memory _keyTuple = new bytes32[](1);
+    _keyTuple[0] = entity;
+
+    unchecked {
+      bytes memory _encoded = abi.encodePacked((_element));
+      StoreCore.spliceDynamicData(_tableId, _keyTuple, 1, uint40(_index * 32), uint40(_encoded.length), _encoded);
+    }
+  }
+
+  /**
    * @notice Get the full data.
    */
   function get(bytes32 entity) internal view returns (EquipmentData memory _table) {
@@ -350,11 +514,17 @@ library Equipment {
   /**
    * @notice Set the full data using individual values.
    */
-  function set(bytes32 entity, EquipmentSlot slot, uint32 level, string memory name) internal {
-    bytes memory _staticData = encodeStatic(slot, level);
+  function set(
+    bytes32 entity,
+    EquipmentType equipmentType,
+    uint32 level,
+    string memory name,
+    bytes32[] memory slots
+  ) internal {
+    bytes memory _staticData = encodeStatic(equipmentType, level);
 
-    EncodedLengths _encodedLengths = encodeLengths(name);
-    bytes memory _dynamicData = encodeDynamic(name);
+    EncodedLengths _encodedLengths = encodeLengths(name, slots);
+    bytes memory _dynamicData = encodeDynamic(name, slots);
 
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = entity;
@@ -365,11 +535,17 @@ library Equipment {
   /**
    * @notice Set the full data using individual values.
    */
-  function _set(bytes32 entity, EquipmentSlot slot, uint32 level, string memory name) internal {
-    bytes memory _staticData = encodeStatic(slot, level);
+  function _set(
+    bytes32 entity,
+    EquipmentType equipmentType,
+    uint32 level,
+    string memory name,
+    bytes32[] memory slots
+  ) internal {
+    bytes memory _staticData = encodeStatic(equipmentType, level);
 
-    EncodedLengths _encodedLengths = encodeLengths(name);
-    bytes memory _dynamicData = encodeDynamic(name);
+    EncodedLengths _encodedLengths = encodeLengths(name, slots);
+    bytes memory _dynamicData = encodeDynamic(name, slots);
 
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = entity;
@@ -381,10 +557,10 @@ library Equipment {
    * @notice Set the full data using the data struct.
    */
   function set(bytes32 entity, EquipmentData memory _table) internal {
-    bytes memory _staticData = encodeStatic(_table.slot, _table.level);
+    bytes memory _staticData = encodeStatic(_table.equipmentType, _table.level);
 
-    EncodedLengths _encodedLengths = encodeLengths(_table.name);
-    bytes memory _dynamicData = encodeDynamic(_table.name);
+    EncodedLengths _encodedLengths = encodeLengths(_table.name, _table.slots);
+    bytes memory _dynamicData = encodeDynamic(_table.name, _table.slots);
 
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = entity;
@@ -396,10 +572,10 @@ library Equipment {
    * @notice Set the full data using the data struct.
    */
   function _set(bytes32 entity, EquipmentData memory _table) internal {
-    bytes memory _staticData = encodeStatic(_table.slot, _table.level);
+    bytes memory _staticData = encodeStatic(_table.equipmentType, _table.level);
 
-    EncodedLengths _encodedLengths = encodeLengths(_table.name);
-    bytes memory _dynamicData = encodeDynamic(_table.name);
+    EncodedLengths _encodedLengths = encodeLengths(_table.name, _table.slots);
+    bytes memory _dynamicData = encodeDynamic(_table.name, _table.slots);
 
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = entity;
@@ -410,8 +586,8 @@ library Equipment {
   /**
    * @notice Decode the tightly packed blob of static data using this table's field layout.
    */
-  function decodeStatic(bytes memory _blob) internal pure returns (EquipmentSlot slot, uint32 level) {
-    slot = EquipmentSlot(uint8(Bytes.getBytes1(_blob, 0)));
+  function decodeStatic(bytes memory _blob) internal pure returns (EquipmentType equipmentType, uint32 level) {
+    equipmentType = EquipmentType(uint8(Bytes.getBytes1(_blob, 0)));
 
     level = (uint32(Bytes.getBytes4(_blob, 1)));
   }
@@ -422,13 +598,19 @@ library Equipment {
   function decodeDynamic(
     EncodedLengths _encodedLengths,
     bytes memory _blob
-  ) internal pure returns (string memory name) {
+  ) internal pure returns (string memory name, bytes32[] memory slots) {
     uint256 _start;
     uint256 _end;
     unchecked {
       _end = _encodedLengths.atIndex(0);
     }
     name = (string(SliceLib.getSubslice(_blob, _start, _end).toBytes()));
+
+    _start = _end;
+    unchecked {
+      _end += _encodedLengths.atIndex(1);
+    }
+    slots = (SliceLib.getSubslice(_blob, _start, _end).decodeArray_bytes32());
   }
 
   /**
@@ -442,9 +624,9 @@ library Equipment {
     EncodedLengths _encodedLengths,
     bytes memory _dynamicData
   ) internal pure returns (EquipmentData memory _table) {
-    (_table.slot, _table.level) = decodeStatic(_staticData);
+    (_table.equipmentType, _table.level) = decodeStatic(_staticData);
 
-    (_table.name) = decodeDynamic(_encodedLengths, _dynamicData);
+    (_table.name, _table.slots) = decodeDynamic(_encodedLengths, _dynamicData);
   }
 
   /**
@@ -471,18 +653,21 @@ library Equipment {
    * @notice Tightly pack static (fixed length) data using this table's schema.
    * @return The static data, encoded into a sequence of bytes.
    */
-  function encodeStatic(EquipmentSlot slot, uint32 level) internal pure returns (bytes memory) {
-    return abi.encodePacked(slot, level);
+  function encodeStatic(EquipmentType equipmentType, uint32 level) internal pure returns (bytes memory) {
+    return abi.encodePacked(equipmentType, level);
   }
 
   /**
    * @notice Tightly pack dynamic data lengths using this table's schema.
    * @return _encodedLengths The lengths of the dynamic fields (packed into a single bytes32 value).
    */
-  function encodeLengths(string memory name) internal pure returns (EncodedLengths _encodedLengths) {
+  function encodeLengths(
+    string memory name,
+    bytes32[] memory slots
+  ) internal pure returns (EncodedLengths _encodedLengths) {
     // Lengths are effectively checked during copy by 2**40 bytes exceeding gas limits
     unchecked {
-      _encodedLengths = EncodedLengthsLib.pack(bytes(name).length);
+      _encodedLengths = EncodedLengthsLib.pack(bytes(name).length, slots.length * 32);
     }
   }
 
@@ -490,8 +675,8 @@ library Equipment {
    * @notice Tightly pack dynamic (variable length) data using this table's schema.
    * @return The dynamic data, encoded into a sequence of bytes.
    */
-  function encodeDynamic(string memory name) internal pure returns (bytes memory) {
-    return abi.encodePacked(bytes((name)));
+  function encodeDynamic(string memory name, bytes32[] memory slots) internal pure returns (bytes memory) {
+    return abi.encodePacked(bytes((name)), EncodeArray.encode((slots)));
   }
 
   /**
@@ -501,14 +686,15 @@ library Equipment {
    * @return The dynamic (variable length) data, encoded into a sequence of bytes.
    */
   function encode(
-    EquipmentSlot slot,
+    EquipmentType equipmentType,
     uint32 level,
-    string memory name
+    string memory name,
+    bytes32[] memory slots
   ) internal pure returns (bytes memory, EncodedLengths, bytes memory) {
-    bytes memory _staticData = encodeStatic(slot, level);
+    bytes memory _staticData = encodeStatic(equipmentType, level);
 
-    EncodedLengths _encodedLengths = encodeLengths(name);
-    bytes memory _dynamicData = encodeDynamic(name);
+    EncodedLengths _encodedLengths = encodeLengths(name, slots);
+    bytes memory _dynamicData = encodeDynamic(name, slots);
 
     return (_staticData, _encodedLengths, _dynamicData);
   }
