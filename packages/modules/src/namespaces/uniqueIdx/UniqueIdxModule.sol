@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity >=0.8.28;
+pragma solidity >=0.8.24;
 
 import { Module } from "@latticexyz/world/src/Module.sol";
 import { IBaseWorld } from "@latticexyz/world/src/codegen/interfaces/IBaseWorld.sol";

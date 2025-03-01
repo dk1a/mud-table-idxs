@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity >=0.8.28;
+pragma solidity >=0.8.24;
 
 import { WORD_SIZE, WORD_LAST_INDEX, BYTE_TO_BITS } from "@latticexyz/store/src/constants.sol";
 
