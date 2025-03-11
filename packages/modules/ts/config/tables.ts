@@ -23,6 +23,9 @@ export function validateTables<storeTables extends Tables>(
       if (!hasOwnKey(storeTables, label)) {
         throw new Error(`Table \`${label}\` does not exist in the referenced store config.`);
       }
+      if (storeTables[label].key.length === 0) {
+        throw new Error(`Table \`${label}\` is a singleton without keys, and can not have idxs.`);
+      }
 
       const tableIdxs: unknown = get(input, label);
       validateTableIdxs(tableIdxs, storeTables[label]);
