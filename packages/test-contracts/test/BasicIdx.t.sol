@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity >=0.8.24;
 
+import { IStoreErrors } from "@latticexyz/store/src/IStoreErrors.sol";
 import { IStoreHook } from "@latticexyz/store/src/IStoreHook.sol";
 import { StoreSwitch } from "@latticexyz/store/src/StoreSwitch.sol";
 
@@ -431,5 +432,12 @@ contract BasicIdxTest is BaseTest {
     StoreSwitch.spliceDynamicData(Equipment._tableId, Equipment.encodeKeyTuple(hex"00"), 0, 6, 0, "2");
 
     _assert3Names(1, 4, 1);
+  }
+
+  function testInvalidBasicGet() public {
+    _testSetFirst();
+
+    vm.expectPartialRevert(IStoreErrors.Store_IndexOutOfBounds.selector);
+    Idx_Equipment_Level.get(d1.level, 1);
   }
 }

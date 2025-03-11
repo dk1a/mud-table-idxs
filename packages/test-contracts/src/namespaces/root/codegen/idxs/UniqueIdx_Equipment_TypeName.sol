@@ -11,6 +11,8 @@ import { EncodeArray } from "@latticexyz/store/src/tightcoder/EncodeArray.sol";
 import { Uint8Map, Uint8MapLib } from "@dk1a/mud-table-idxs/src/Uint8Map.sol";
 import { hashIndexes, hashValues } from "@dk1a/mud-table-idxs/src/utils.sol";
 
+import { IIdxErrors } from "@dk1a/mud-table-idxs/src/IIdxErrors.sol";
+
 import { registerUniqueIdx } from "@dk1a/mud-table-idxs/src/namespaces/uniqueIdx/registerUniqueIdx.sol";
 import { UniqueIdx } from "@dk1a/mud-table-idxs/src/namespaces/uniqueIdx/codegen/tables/UniqueIdx.sol";
 
@@ -58,7 +60,17 @@ library UniqueIdx_Equipment_TypeName {
   ) internal view returns (bytes32[] memory _keyTuple) {
     bytes32 _valuesHash = valuesHash(equipmentType, name);
 
-    return UniqueIdx.get(_tableId, _indexesHash, _valuesHash);
+    _keyTuple = UniqueIdx.get(_tableId, _indexesHash, _valuesHash);
+
+    if (_keyTuple.length == 0) {
+      revert IIdxErrors.UniqueIdx_InvalidGet({
+        tableId: _tableId,
+        libraryName: "UniqueIdx_Equipment_TypeName",
+        valuesBlob: abi.encodePacked(equipmentType, name),
+        indexesHash: _indexesHash,
+        valuesHash: _valuesHash
+      });
+    }
   }
 
   function get(EquipmentType equipmentType, string memory name) internal view returns (bytes32 entity) {

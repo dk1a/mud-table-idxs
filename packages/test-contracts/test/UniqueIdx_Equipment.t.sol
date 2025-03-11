@@ -3,6 +3,7 @@ pragma solidity >=0.8.24;
 
 import { IStoreHook } from "@latticexyz/store/src/IStoreHook.sol";
 
+import { IIdxErrors } from "@dk1a/mud-table-idxs/src/IIdxErrors.sol";
 import { UniqueIdxMetadata } from "@dk1a/mud-table-idxs/src/namespaces/uniqueIdx/codegen/tables/UniqueIdxMetadata.sol";
 import { UniqueIdxHook } from "@dk1a/mud-table-idxs/src/namespaces/uniqueIdx/UniqueIdxHook.sol";
 
@@ -18,6 +19,13 @@ struct TestData {
   uint32 level;
   string name;
   bytes32[] slots;
+}
+
+// Public library to create a non-zero callstack for expectRevert to work well, but preserve context via delegatecall
+library RevertHelper {
+  function getUniqueIdx(EquipmentType equipmentType, string memory name) public view returns (bytes32) {
+    return UniqueIdx_Equipment_TypeName.get(equipmentType, name);
+  }
 }
 
 contract UniqueIdx_EquipmentTest is BaseTest {
@@ -70,5 +78,21 @@ contract UniqueIdx_EquipmentTest is BaseTest {
 
     vm.expectPartialRevert(UniqueIdxHook.UniqueIdxHook_UniqueValueDuplicate.selector);
     Equipment.set(hex"1b", d1.equipmentType, d1.level, d1.name, d1.slots);
+  }
+
+  function testInvalidUniqueGet() public {
+    Equipment.set(d1.entity, d1.equipmentType, d1.level, d1.name, d1.slots);
+
+    vm.expectRevert(
+      abi.encodeWithSelector(
+        IIdxErrors.UniqueIdx_InvalidGet.selector,
+        Equipment._tableId,
+        "UniqueIdx_Equipment_TypeName",
+        abi.encodePacked(d1.equipmentType, "absentName"),
+        UniqueIdx_Equipment_TypeName._indexesHash,
+        UniqueIdx_Equipment_TypeName.valuesHash(d1.equipmentType, "absentName")
+      )
+    );
+    RevertHelper.getUniqueIdx(d1.equipmentType, "absentName");
   }
 }

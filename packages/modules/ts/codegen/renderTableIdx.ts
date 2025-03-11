@@ -52,7 +52,9 @@ export function renderTableIdx(options: RenderTableIdxOptions) {
 
   const registerFunction = unique ? "registerUniqueIdx" : "registerBasicIdx";
 
-  let namespaceImports = "";
+  let namespaceImports = `
+    import { IIdxErrors } from "${renderImportPath(idxImportPath, "/IIdxErrors.sol")}";
+  `;
   if (unique) {
     namespaceImports += `
       import { registerUniqueIdx } from "${renderImportPath(idxImportPath, "namespaces/uniqueIdx/registerUniqueIdx.sol")}";
@@ -149,7 +151,7 @@ export function renderDecodeKeyTuple(keyTuple: RenderKeyTuple[]) {
 }
 
 function renderUniqueMethods(
-  { storeArgument, staticResourceData, keyTuple }: RenderTableIdxOptions,
+  { libraryName, storeArgument, staticResourceData, keyTuple }: RenderTableIdxOptions,
   _selectedArgs: string,
   _typedSelectedArgs: string,
 ): string {
@@ -172,7 +174,8 @@ function renderUniqueMethods(
       ])}) internal view returns (bytes32[] memory _keyTuple) {
         bytes32 _valuesHash = valuesHash(${_selectedArgs});
 
-        return UniqueIdx.get(${renderArguments([_store, "_tableId", "_indexesHash", "_valuesHash"])});
+        _keyTuple = UniqueIdx.get(${renderArguments([_store, "_tableId", "_indexesHash", "_valuesHash"])});
+        ${renderHandleInvalidGet(libraryName, _selectedArgs)}
       }
 
       function get(${renderArguments([
@@ -248,7 +251,7 @@ function renderBasicMethods(
         ])}) internal view returns (bytes32[] memory _keyTuple) {
           bytes32 _valuesHash = valuesHash(${_selectedArgs});
 
-          return BasicIdx_KeyTuple.getItem(${renderArguments([
+          _keyTuple = BasicIdx_KeyTuple.getItem(${renderArguments([
             _store,
             "_tableId",
             "_indexesHash",
@@ -273,4 +276,18 @@ function renderBasicMethods(
   }
 
   return result;
+}
+
+function renderHandleInvalidGet(libraryName: string, _selectedArgs: string) {
+  return `
+    if (_keyTuple.length == 0) {
+      revert IIdxErrors.UniqueIdx_InvalidGet({
+        tableId: _tableId,
+        libraryName: "${libraryName}",
+        valuesBlob: abi.encodePacked(${_selectedArgs}),
+        indexesHash: _indexesHash,
+        valuesHash: _valuesHash
+      });
+    }
+  `;
 }
