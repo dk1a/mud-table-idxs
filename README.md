@@ -57,7 +57,7 @@ Then add `./ts/scripts/generate-idxs.ts` (the specific path/name isn't important
 ```ts
 import path from "node:path";
 import { fileURLToPath } from "node:url";
-import { idxgen } from "@dk1a/mud-table-idxs";
+import { idxgen } from "@dk1a/mud-table-idxs/codegen";
 
 import storeConfig from "../../mud.config";
 // TODO change this if you named your idxs config something else
