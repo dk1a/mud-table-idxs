@@ -7,8 +7,9 @@ import { getTableOptions } from "@latticexyz/store/codegen";
 import { Store as StoreConfig } from "@latticexyz/store";
 import { getUserTypes } from "../tempcodegen/getUserTypes";
 import { StoreIdxsConfig } from "../config/output";
-import { getTableIdxOptions } from "./getTableIdxOptions";
+import { getTableIdxOptions, TableIdxOptions } from "./getTableIdxOptions";
 import { renderTableIdx } from "./renderTableIdx";
+import { renderBatchRegisterIdxs } from "./renderBatchRegisterIdxs";
 
 export type IdxgenOptions = {
   /**
@@ -40,6 +41,8 @@ export async function idxgen({ rootDir, idxsConfig, storeConfig }: IdxgenOptions
         storeImportPath: storeConfig.codegen.storeImportPath,
       });
 
+      let namespaceIdxOptions: TableIdxOptions[] = [];
+
       await Promise.all(
         Object.keys(tables).map(async (tableKey) => {
           const singleTableOptions = tableOptions.find(
@@ -60,6 +63,8 @@ export async function idxgen({ rootDir, idxsConfig, storeConfig }: IdxgenOptions
             // TODO move to defaults properly or remove the option entirely
             idxImportPath: "@dk1a/mud-table-idxs/src",
           });
+          // Collect all idxs within this namespace
+          namespaceIdxOptions = namespaceIdxOptions.concat(tableIdxOptions);
 
           const tableIdxDirs = uniqueBy(
             tableIdxOptions.map(({ outputPath }) => path.dirname(outputPath)),
@@ -77,6 +82,12 @@ export async function idxgen({ rootDir, idxsConfig, storeConfig }: IdxgenOptions
           );
         }),
       );
+
+      if (namespaceIdxOptions.length > 0) {
+        const codegenIndexPath = path.join(rootDir, codegenDir, "batchRegisterIdxs.sol");
+        const source = renderBatchRegisterIdxs(codegenIndexPath, namespaceIdxOptions);
+        await formatAndWriteSolidity(source, codegenIndexPath, "Generated batch idx function");
+      }
     }),
   );
 
