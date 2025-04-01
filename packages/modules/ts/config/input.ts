@@ -3,16 +3,14 @@ import { TableIdxCodegen } from "./output";
 export type TableIdxCodegenInput = Partial<TableIdxCodegen>;
 
 export type TableIdxInput = {
-  readonly label: string;
+  readonly label?: string;
   readonly fields: readonly string[];
   readonly unique: boolean;
 
   readonly codegen?: TableIdxCodegenInput;
 };
 
-export type TableIdxsInput = {
-  readonly [label: string]: Omit<TableIdxInput, "label">;
-};
+export type TableIdxsInput = TableIdxInput[];
 
 export type TablesInput = {
   readonly [label: string]: TableIdxsInput;

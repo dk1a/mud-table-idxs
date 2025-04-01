@@ -14,7 +14,7 @@ import { EquipmentType } from "../src/codegen/common.sol";
 import { Equipment } from "../src/namespaces/root/codegen/tables/Equipment.sol";
 import { Idx_Equipment_Entity } from "../src/namespaces/root/codegen/idxs/Idx_Equipment_Entity.sol";
 import { Idx_Equipment_Level } from "../src/namespaces/root/codegen/idxs/Idx_Equipment_Level.sol";
-import { Idx_Equipment_TypeLevel } from "../src/namespaces/root/codegen/idxs/Idx_Equipment_TypeLevel.sol";
+import { Idx_Equipment_EquipmentTypeLevel } from "../src/namespaces/root/codegen/idxs/Idx_Equipment_EquipmentTypeLevel.sol";
 import { Idx_Equipment_Name } from "../src/namespaces/root/codegen/idxs/Idx_Equipment_Name.sol";
 import { Idx_Equipment_TypeNameSlots } from "../src/namespaces/root/codegen/idxs/Idx_Equipment_TypeNameSlots.sol";
 
@@ -43,7 +43,7 @@ contract BasicIdxTest is BaseTest {
 
     hookEntity = BasicIdxMetadata.getHookAddress(Equipment._tableId, Idx_Equipment_Entity._indexesHash);
     hookLevel = BasicIdxMetadata.getHookAddress(Equipment._tableId, Idx_Equipment_Level._indexesHash);
-    hookTypeLevel = BasicIdxMetadata.getHookAddress(Equipment._tableId, Idx_Equipment_TypeLevel._indexesHash);
+    hookTypeLevel = BasicIdxMetadata.getHookAddress(Equipment._tableId, Idx_Equipment_EquipmentTypeLevel._indexesHash);
     hookName = BasicIdxMetadata.getHookAddress(Equipment._tableId, Idx_Equipment_Name._indexesHash);
     hookTypeNameSlots = BasicIdxMetadata.getHookAddress(Equipment._tableId, Idx_Equipment_TypeNameSlots._indexesHash);
 
@@ -98,8 +98,8 @@ contract BasicIdxTest is BaseTest {
     assertEq(Idx_Equipment_Level.length(d1.level), 1);
     assertEq(Idx_Equipment_Level.get(d1.level, 0), d1.entity);
     // [equipmentType,level] idx
-    assertEq(Idx_Equipment_TypeLevel.length(d1.equipmentType, d1.level), 1);
-    assertEq(Idx_Equipment_TypeLevel.get(d1.equipmentType, d1.level, 0), d1.entity);
+    assertEq(Idx_Equipment_EquipmentTypeLevel.length(d1.equipmentType, d1.level), 1);
+    assertEq(Idx_Equipment_EquipmentTypeLevel.get(d1.equipmentType, d1.level, 0), d1.entity);
     // [name] idx
     assertEq(Idx_Equipment_Name.length(d1.name), 1);
     assertEq(Idx_Equipment_Name.get(d1.name, 0), d1.entity);
@@ -126,11 +126,11 @@ contract BasicIdxTest is BaseTest {
     assertEq(Idx_Equipment_Level.get(d2.level, 0), d1.entity);
     assertEq(Idx_Equipment_Level.get(d2.level, 1), d2.entity);
     // [equipmentType,level] idx
-    assertEq(Idx_Equipment_TypeLevel.length(d2.equipmentType, d2.level), 1);
-    assertEq(Idx_Equipment_TypeLevel.get(d2.equipmentType, d2.level, 0), d2.entity);
+    assertEq(Idx_Equipment_EquipmentTypeLevel.length(d2.equipmentType, d2.level), 1);
+    assertEq(Idx_Equipment_EquipmentTypeLevel.get(d2.equipmentType, d2.level, 0), d2.entity);
     // Ensure data1 is still present
-    assertEq(Idx_Equipment_TypeLevel.length(d1.equipmentType, d1.level), 1);
-    assertEq(Idx_Equipment_TypeLevel.get(d1.equipmentType, d1.level, 0), d1.entity);
+    assertEq(Idx_Equipment_EquipmentTypeLevel.length(d1.equipmentType, d1.level), 1);
+    assertEq(Idx_Equipment_EquipmentTypeLevel.get(d1.equipmentType, d1.level, 0), d1.entity);
     // [name] idx
     assertEq(Idx_Equipment_Name.length(d2.name), 1);
     assertEq(Idx_Equipment_Name.get(d2.name, 0), d2.entity);
@@ -165,12 +165,12 @@ contract BasicIdxTest is BaseTest {
     assertEq(Idx_Equipment_Level.get(d3.level, 1), d2.entity);
     assertEq(Idx_Equipment_Level.get(d3.level, 2), d3.entity);
     // [equipmentType,level] idx
-    assertEq(Idx_Equipment_TypeLevel.length(d3.equipmentType, d3.level), 2);
-    assertEq(Idx_Equipment_TypeLevel.get(d3.equipmentType, d3.level, 0), d1.entity);
-    assertEq(Idx_Equipment_TypeLevel.get(d3.equipmentType, d3.level, 1), d3.entity);
+    assertEq(Idx_Equipment_EquipmentTypeLevel.length(d3.equipmentType, d3.level), 2);
+    assertEq(Idx_Equipment_EquipmentTypeLevel.get(d3.equipmentType, d3.level, 0), d1.entity);
+    assertEq(Idx_Equipment_EquipmentTypeLevel.get(d3.equipmentType, d3.level, 1), d3.entity);
     // Ensure data2 is still present
-    assertEq(Idx_Equipment_TypeLevel.length(d2.equipmentType, d2.level), 1);
-    assertEq(Idx_Equipment_TypeLevel.get(d2.equipmentType, d2.level, 0), d2.entity);
+    assertEq(Idx_Equipment_EquipmentTypeLevel.length(d2.equipmentType, d2.level), 1);
+    assertEq(Idx_Equipment_EquipmentTypeLevel.get(d2.equipmentType, d2.level, 0), d2.entity);
     // [name] idx
     assertEq(Idx_Equipment_Name.length(d3.name), 1);
     assertEq(Idx_Equipment_Name.get(d3.name, 0), d3.entity);
@@ -225,12 +225,12 @@ contract BasicIdxTest is BaseTest {
     assertEq(Idx_Equipment_Level.get(d1.level, 0), d1.entity);
     assertEq(Idx_Equipment_Level.get(d1.level, 1), d3.entity);
     // [equipmentType,level] idx
-    assertEq(Idx_Equipment_TypeLevel.length(d2.equipmentType, d2.level), 1);
-    assertEq(Idx_Equipment_TypeLevel.get(d2.equipmentType, d2.level, 0), d2.entity);
+    assertEq(Idx_Equipment_EquipmentTypeLevel.length(d2.equipmentType, d2.level), 1);
+    assertEq(Idx_Equipment_EquipmentTypeLevel.get(d2.equipmentType, d2.level, 0), d2.entity);
     // Ensure data1 and data3 are still present
-    assertEq(Idx_Equipment_TypeLevel.length(d3.equipmentType, d3.level), 2);
-    assertEq(Idx_Equipment_TypeLevel.get(d3.equipmentType, d3.level, 0), d1.entity);
-    assertEq(Idx_Equipment_TypeLevel.get(d3.equipmentType, d3.level, 1), d3.entity);
+    assertEq(Idx_Equipment_EquipmentTypeLevel.length(d3.equipmentType, d3.level), 2);
+    assertEq(Idx_Equipment_EquipmentTypeLevel.get(d3.equipmentType, d3.level, 0), d1.entity);
+    assertEq(Idx_Equipment_EquipmentTypeLevel.get(d3.equipmentType, d3.level, 1), d3.entity);
     // [name] idx (should be unaffected)
     assertEq(Idx_Equipment_Name.length(d1.name), 1);
     assertEq(Idx_Equipment_Name.get(d1.name, 0), d1.entity);
@@ -273,11 +273,11 @@ contract BasicIdxTest is BaseTest {
     assertEq(Idx_Equipment_Level.get(d2.level, 1), d2.entity);
     assertEq(Idx_Equipment_Level.get(d1.level, 2), d3.entity);
     // [equipmentType,level] idx (should be unaffected)
-    assertEq(Idx_Equipment_TypeLevel.length(d2.equipmentType, d2.level), 1);
-    assertEq(Idx_Equipment_TypeLevel.get(d2.equipmentType, d2.level, 0), d2.entity);
-    assertEq(Idx_Equipment_TypeLevel.length(d3.equipmentType, d3.level), 2);
-    assertEq(Idx_Equipment_TypeLevel.get(d3.equipmentType, d3.level, 0), d1.entity);
-    assertEq(Idx_Equipment_TypeLevel.get(d3.equipmentType, d3.level, 1), d3.entity);
+    assertEq(Idx_Equipment_EquipmentTypeLevel.length(d2.equipmentType, d2.level), 1);
+    assertEq(Idx_Equipment_EquipmentTypeLevel.get(d2.equipmentType, d2.level, 0), d2.entity);
+    assertEq(Idx_Equipment_EquipmentTypeLevel.length(d3.equipmentType, d3.level), 2);
+    assertEq(Idx_Equipment_EquipmentTypeLevel.get(d3.equipmentType, d3.level, 0), d1.entity);
+    assertEq(Idx_Equipment_EquipmentTypeLevel.get(d3.equipmentType, d3.level, 1), d3.entity);
     // [name] idx (should be unaffected)
     assertEq(Idx_Equipment_Name.length(d1.name), 1);
     assertEq(Idx_Equipment_Name.get(d1.name, 0), d1.entity);
@@ -319,11 +319,11 @@ contract BasicIdxTest is BaseTest {
     assertEq(Idx_Equipment_Level.get(d2.level, 0), d1.entity);
     assertEq(Idx_Equipment_Level.get(d2.level, 1), d3.entity);
     // [equipmentType,level] idx
-    assertEq(Idx_Equipment_TypeLevel.length(d2.equipmentType, d2.level), 0);
+    assertEq(Idx_Equipment_EquipmentTypeLevel.length(d2.equipmentType, d2.level), 0);
     // Ensure data1 and data3 are still present
-    assertEq(Idx_Equipment_TypeLevel.length(d3.equipmentType, d3.level), 2);
-    assertEq(Idx_Equipment_TypeLevel.get(d3.equipmentType, d3.level, 0), d1.entity);
-    assertEq(Idx_Equipment_TypeLevel.get(d3.equipmentType, d3.level, 1), d3.entity);
+    assertEq(Idx_Equipment_EquipmentTypeLevel.length(d3.equipmentType, d3.level), 2);
+    assertEq(Idx_Equipment_EquipmentTypeLevel.get(d3.equipmentType, d3.level, 0), d1.entity);
+    assertEq(Idx_Equipment_EquipmentTypeLevel.get(d3.equipmentType, d3.level, 1), d3.entity);
     // [name] idx
     assertEq(Idx_Equipment_Name.length(d2.name), 0);
     // Ensure data1 and data3 are still present

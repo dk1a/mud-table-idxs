@@ -19,7 +19,7 @@ import { UniqueIdx } from "@dk1a/mud-table-idxs/src/namespaces/uniqueIdx/codegen
 // Import user types
 import { EquipmentType } from "../../../../codegen/common.sol";
 
-library UniqueIdx_Equipment_TypeName {
+library UniqueIdx_Equipment_EquipmentTypeName {
   // Hex below is the result of `WorldResourceIdLib.encode({ namespace: "", name: "Equipment", typeId: RESOURCE_TABLE });`
   ResourceId constant _tableId = ResourceId.wrap(0x7462000000000000000000000000000045717569706d656e7400000000000000);
 
@@ -65,7 +65,7 @@ library UniqueIdx_Equipment_TypeName {
     if (_keyTuple.length == 0) {
       revert IIdxErrors.UniqueIdx_InvalidGet({
         tableId: _tableId,
-        libraryName: "UniqueIdx_Equipment_TypeName",
+        libraryName: "UniqueIdx_Equipment_EquipmentTypeName",
         valuesBlob: abi.encodePacked(equipmentType, name),
         indexesHash: _indexesHash,
         valuesHash: _valuesHash

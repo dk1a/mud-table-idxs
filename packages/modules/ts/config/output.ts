@@ -12,9 +12,7 @@ export type TableIdx = {
   readonly codegen: TableIdxCodegen;
 };
 
-export type TableIdxs = {
-  readonly [label: string]: TableIdx;
-};
+export type TableIdxs = TableIdx[];
 
 export type Tables = {
   readonly [label: string]: TableIdxs;

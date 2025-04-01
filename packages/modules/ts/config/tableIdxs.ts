@@ -1,6 +1,6 @@
 import { ErrorMessage } from "@ark/util";
 import { Table } from "@latticexyz/config";
-import { isObject, mergeIfUndefined, Store } from "@latticexyz/store/internal";
+import { Store } from "@latticexyz/store/internal";
 import { TableIdxsInput } from "./input";
 import { validateTableIdx, resolveTableIdx } from "./tableIdx";
 
@@ -9,18 +9,20 @@ export type validateTableIdxs<
   storeConfig extends Store,
   namespaceLabel extends string,
   tableLabel extends string,
-> = {
-  [label in keyof tableIdxs]: tableIdxs[label] extends object
-    ? validateTableIdx<tableIdxs[label], storeConfig, namespaceLabel, tableLabel>
-    : ErrorMessage<`Expected tableIdxs config.`>;
-};
+> = tableIdxs extends readonly unknown[]
+  ? {
+      [key in keyof tableIdxs]: tableIdxs[key] extends object
+        ? validateTableIdx<tableIdxs[key], storeConfig, namespaceLabel, tableLabel>
+        : ErrorMessage<`Expected tableIdx config.`>;
+    }
+  : ErrorMessage<`Expected array of tableIdx configs.`>;
 
 export function validateTableIdxs<storeTable extends Table>(
   input: unknown,
   storeTable: storeTable,
 ): asserts input is TableIdxsInput {
-  if (isObject(input)) {
-    for (const tableIdx of Object.values(input)) {
+  if (Array.isArray(input)) {
+    for (const tableIdx of input) {
       validateTableIdx(tableIdx, storeTable);
     }
     return;
@@ -29,19 +31,14 @@ export function validateTableIdxs<storeTable extends Table>(
 }
 
 export type resolveTableIdxs<tableIdxs, storeTable extends Table> = {
-  readonly [label in keyof tableIdxs]: resolveTableIdx<
-    mergeIfUndefined<tableIdxs[label], { readonly label: label }>,
-    storeTable
-  >;
+  readonly [key in keyof tableIdxs]: resolveTableIdx<tableIdxs[key], storeTable>;
 };
 
 export function resolveTableIdxs<tableIdxs extends TableIdxsInput, storeTable extends Table>(
   tableIdxs: tableIdxs,
   storeTable: storeTable,
 ): resolveTableIdxs<tableIdxs, storeTable> {
-  return Object.fromEntries(
-    Object.entries(tableIdxs).map(([label, tableIdx]) => {
-      return [label, resolveTableIdx(mergeIfUndefined(tableIdx, { label }), storeTable)];
-    }),
-  ) as never;
+  return Object.values(tableIdxs).map((tableIdx) => {
+    return resolveTableIdx(tableIdx, storeTable);
+  }) as never;
 }

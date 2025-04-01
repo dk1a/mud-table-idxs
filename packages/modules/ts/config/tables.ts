@@ -1,6 +1,6 @@
 import { ErrorMessage } from "@ark/util";
 import { Tables } from "@latticexyz/config";
-import { get, hasOwnKey, isObject, mergeIfUndefined, Store } from "@latticexyz/store/internal";
+import { get, hasOwnKey, isObject, Store } from "@latticexyz/store/internal";
 import { TablesInput } from "./input";
 import { validateTableIdxs, resolveTableIdxs } from "./tableIdxs";
 
@@ -36,10 +36,7 @@ export function validateTables<storeTables extends Tables>(
 }
 
 export type resolveTables<tables, storeTables extends Tables> = {
-  readonly [label in keyof tables]: resolveTableIdxs<
-    mergeIfUndefined<tables[label], Record<string, never>>,
-    label extends string ? storeTables[label] : never
-  >;
+  readonly [label in keyof tables]: resolveTableIdxs<tables[label], label extends string ? storeTables[label] : never>;
 };
 
 export function resolveTables<tables extends TablesInput, storeTables extends Tables>(
@@ -48,7 +45,7 @@ export function resolveTables<tables extends TablesInput, storeTables extends Ta
 ): resolveTables<tables, storeTables> {
   return Object.fromEntries(
     Object.entries(tables).map(([label, table]) => {
-      return [label, resolveTableIdxs(mergeIfUndefined(table, {}), storeTables[label])];
+      return [label, resolveTableIdxs(table, storeTables[label])];
     }),
   ) as never;
 }

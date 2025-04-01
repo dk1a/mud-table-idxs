@@ -21,7 +21,7 @@ import { BasicIdx_KeyTuple } from "@dk1a/mud-table-idxs/src/namespaces/basicIdx/
 // Import user types
 import { EquipmentType } from "../../../../codegen/common.sol";
 
-library Idx_Equipment_TypeLevel {
+library Idx_Equipment_EquipmentTypeLevel {
   // Hex below is the result of `WorldResourceIdLib.encode({ namespace: "", name: "Equipment", typeId: RESOURCE_TABLE });`
   ResourceId constant _tableId = ResourceId.wrap(0x7462000000000000000000000000000045717569706d656e7400000000000000);
 

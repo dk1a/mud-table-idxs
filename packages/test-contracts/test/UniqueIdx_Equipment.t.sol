@@ -11,7 +11,7 @@ import { BaseTest } from "./BaseTest.t.sol";
 
 import { EquipmentType } from "../src/codegen/common.sol";
 import { Equipment } from "../src/namespaces/root/codegen/tables/Equipment.sol";
-import { UniqueIdx_Equipment_TypeName } from "../src/namespaces/root/codegen/idxs/UniqueIdx_Equipment_TypeName.sol";
+import { UniqueIdx_Equipment_EquipmentTypeName } from "../src/namespaces/root/codegen/idxs/UniqueIdx_Equipment_EquipmentTypeName.sol";
 
 struct TestData {
   bytes32 entity;
@@ -24,7 +24,7 @@ struct TestData {
 // Public library to create a non-zero callstack for expectRevert to work well, but preserve context via delegatecall
 library RevertHelper {
   function getUniqueIdx(EquipmentType equipmentType, string memory name) public view returns (bytes32) {
-    return UniqueIdx_Equipment_TypeName.get(equipmentType, name);
+    return UniqueIdx_Equipment_EquipmentTypeName.get(equipmentType, name);
   }
 }
 
@@ -39,10 +39,13 @@ contract UniqueIdx_EquipmentTest is BaseTest {
     // This idx is not globally registered in PostDeploy
     uint256 deployerPrivateKey = vm.envUint("PRIVATE_KEY");
     vm.startPrank(vm.addr(deployerPrivateKey));
-    UniqueIdx_Equipment_TypeName.register();
+    UniqueIdx_Equipment_EquipmentTypeName.register();
     vm.stopPrank();
 
-    hookAddress = UniqueIdxMetadata.getHookAddress(Equipment._tableId, UniqueIdx_Equipment_TypeName._indexesHash);
+    hookAddress = UniqueIdxMetadata.getHookAddress(
+      Equipment._tableId,
+      UniqueIdx_Equipment_EquipmentTypeName._indexesHash
+    );
 
     bytes32[] memory d1Slots = new bytes32[](1);
     d1Slots[0] = "Hands";
@@ -70,7 +73,7 @@ contract UniqueIdx_EquipmentTest is BaseTest {
 
     Equipment.set(d1.entity, d1.equipmentType, d1.level, d1.name, d1.slots);
 
-    assertEq(UniqueIdx_Equipment_TypeName.get(d1.equipmentType, d1.name), d1.entity);
+    assertEq(UniqueIdx_Equipment_EquipmentTypeName.get(d1.equipmentType, d1.name), d1.entity);
   }
 
   function testSetUniqueDuplicateError() public {
@@ -87,10 +90,10 @@ contract UniqueIdx_EquipmentTest is BaseTest {
       abi.encodeWithSelector(
         IIdxErrors.UniqueIdx_InvalidGet.selector,
         Equipment._tableId,
-        "UniqueIdx_Equipment_TypeName",
+        "UniqueIdx_Equipment_EquipmentTypeName",
         abi.encodePacked(d1.equipmentType, "absentName"),
-        UniqueIdx_Equipment_TypeName._indexesHash,
-        UniqueIdx_Equipment_TypeName.valuesHash(d1.equipmentType, "absentName")
+        UniqueIdx_Equipment_EquipmentTypeName._indexesHash,
+        UniqueIdx_Equipment_EquipmentTypeName.valuesHash(d1.equipmentType, "absentName")
       )
     );
     RevertHelper.getUniqueIdx(d1.equipmentType, "absentName");

@@ -4,6 +4,7 @@ import { Table } from "@latticexyz/config";
 import { TableIdxInput } from "./input";
 import { TableIdxCodegen } from "./output";
 import { TABLE_IDX_CODEGEN_DEFAULTS } from "./defaults";
+import { resolveTableIdxLabel } from "./tableIdxLabel";
 
 export type validateFields<validFields extends PropertyKey, fields> = fields extends readonly string[]
   ? {
@@ -85,7 +86,7 @@ export function resolveTableIdx<input extends TableIdxInput, storeTable extends 
   input: input,
   storeTable: storeTable,
 ): resolveTableIdx<input, storeTable> {
-  const label = input.label;
+  const label = input.label ?? resolveTableIdxLabel(input, storeTable);
   const fields = input.fields;
   const unique = input.unique ?? true;
 

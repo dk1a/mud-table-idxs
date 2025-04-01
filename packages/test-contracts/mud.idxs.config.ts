@@ -6,39 +6,40 @@ export default defineStoreIdxs(
     namespaces: {
       root: {
         tables: {
-          Equipment: {
-            UniqueIdx_Equipment_TypeName: {
+          Equipment: [
+            {
               fields: ["equipmentType", "name"],
               unique: true,
             },
             // Not meaningful indexes, just testing various configs
-            Idx_Equipment_Entity: {
+            {
               fields: ["entity"],
               unique: false,
             },
-            Idx_Equipment_Level: {
+            {
               fields: ["level"],
               unique: false,
             },
-            Idx_Equipment_TypeLevel: {
+            {
               fields: ["equipmentType", "level"],
               unique: false,
             },
-            Idx_Equipment_Name: {
+            {
               fields: ["name"],
               unique: false,
             },
-            Idx_Equipment_TypeNameSlots: {
+            {
+              label: "Idx_Equipment_TypeNameSlots",
               fields: ["equipmentType", "name", "slots"],
               unique: false,
             },
-          },
-          Position: {
-            Idx_Position_MatchEntityXY: {
+          ],
+          Position: [
+            {
               fields: ["matchEntity", "x", "y"],
               unique: false,
             },
-          },
+          ],
         },
       },
     },
