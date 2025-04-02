@@ -36,14 +36,12 @@ export default defineStoreIdxs(
     namespaces: {
       root: {
         tables: {
-          YourMudTable: {
-            // Name your idx library however you want, onchain they are identified by their options/fields
-            // (which is why you can't have 2 identical idxs that differ only by name)
-            Idx_YourMudTable_Fields12: {
+          YourMudTable: [
+            {
               fields: ["field1", "field2"],
               unique: false,
             },
-          },
+          ],
         },
       },
     },
